@@ -67,13 +67,13 @@
     </style>
 </head>
 
-<body onload="brython()" class="h-screen overflow-hidden flex flex-col bg-base-200 text-base-content transition-colors duration-300">
+<body class="h-screen overflow-hidden flex flex-col bg-base-200 text-base-content transition-colors duration-300">
 
     <!-- Loading -->
     <div id="loader" class="bg-neutral text-neutral-content">
         <span class="loading loading-spinner loading-lg text-sky-500 mb-4"></span>
         <h2 class="text-lg font-bold">Initializing Printos...</h2>
-        <div id="loader-error" class="mt-4"></div>
+        <div id="loader-error" class="mt-4 text-center"></div>
     </div>
 
     <!-- Sidebar & Content Wrapper -->
@@ -180,12 +180,12 @@
                                 <div class="stat overflow-hidden">
                                     <div class="stat-figure text-sky-500"><i class="fa-solid fa-wallet text-3xl"></i></div>
                                     <div class="stat-title text-base-content/70 truncate">Total Sales</div>
-                                    <div class="stat-value text-sky-500 truncate">₹<span id="dash-sales">0.00</span></div>
+                                    <div class="stat-value text-sky-500 truncate"><span id="dash-sales">₹ 0.00</span></div>
                                 </div>
                                 <div class="stat overflow-hidden">
                                     <div class="stat-figure text-violet-500"><i class="fa-solid fa-cart-shopping text-3xl"></i></div>
                                     <div class="stat-title text-base-content/70 truncate">Total Purchase</div>
-                                    <div class="stat-value text-violet-500 truncate">₹<span id="dash-purchase">0.00</span></div>
+                                    <div class="stat-value text-violet-500 truncate"><span id="dash-purchase">₹ 0.00</span></div>
                                 </div>
                             </div>
 
@@ -193,13 +193,13 @@
                                 <div class="stats shadow w-full bg-base-100 overflow-hidden">
                                     <div class="stat overflow-hidden">
                                         <div class="stat-title text-base-content/70 truncate">Receivables</div>
-                                        <div class="stat-value text-warning text-2xl truncate">₹<span id="dash-receivable">0.00</span></div>
+                                        <div class="stat-value text-warning text-2xl truncate"><span id="dash-receivable">₹ 0.00</span></div>
                                     </div>
                                 </div>
                                 <div class="stats shadow w-full bg-base-100 overflow-hidden">
                                     <div class="stat overflow-hidden">
                                         <div class="stat-title text-base-content/70 truncate">Payables</div>
-                                        <div class="stat-value text-error text-2xl truncate">₹<span id="dash-payable">0.00</span></div>
+                                        <div class="stat-value text-error text-2xl truncate"><span id="dash-payable">₹ 0.00</span></div>
                                     </div>
                                 </div>
                             </div>
@@ -314,7 +314,9 @@
                         <div class="card-body">
                             <h2 class="card-title text-base-content font-bold">Purchase Entry</h2>
                             <div class="grid grid-cols-2 gap-4">
-                                <input type="text" id="purch-vendor" placeholder="Supplier" class="input input-bordered w-full text-base-content" />
+                                <input type="text" id="purch-vendor" list="vendor-list" placeholder="Supplier" class="input input-bordered w-full text-base-content" />
+                                <datalist id="vendor-list"></datalist>
+                                
                                 <input type="text" id="purch-item" placeholder="Item" class="input input-bordered w-full text-base-content" />
                                 <input type="number" id="purch-qty" placeholder="Qty" class="input input-bordered w-full text-base-content" value="1" />
                                 <input type="number" id="purch-cost" placeholder="Cost" class="input input-bordered w-full text-base-content" />
@@ -345,9 +347,9 @@
                         <div class="stats bg-neutral text-neutral-content w-full">
                             <div class="stat">
                                 <div class="stat-title text-neutral-content/70 truncate">Profit / Loss</div>
-                                <div class="stat-value truncate" id="pl-net">₹0.00</div>
-                                <div class="stat-desc truncate" id="pl-rev">Revenue: ₹0.00</div>
-                                <div class="stat-desc truncate" id="pl-exp">Expense: ₹0.00</div>
+                                <div class="stat-value truncate" id="pl-net">₹ 0.00</div>
+                                <div class="stat-desc truncate" id="pl-rev">Revenue: ₹ 0.00</div>
+                                <div class="stat-desc truncate" id="pl-exp">Expense: ₹ 0.00</div>
                             </div>
                         </div>
                     </div>
@@ -416,9 +418,9 @@
                     <div class="card bg-base-100 shadow-xl p-6 text-base-content">
                         <h2 class="card-title mb-4 font-bold">GST Compliance</h2>
                         <div class="bg-base-200 p-6 rounded-lg font-mono text-sm leading-relaxed">
-                            <div class="flex justify-between border-b border-base-300 pb-2 mb-2"><span>GSTR-1 Total Sales:</span> <span class="font-bold">₹0.00</span></div>
-                            <div class="flex justify-between border-b border-base-300 pb-2 mb-2"><span>GSTR-2 Total Purchases:</span> <span class="font-bold">₹0.00</span></div>
-                            <div class="flex justify-between text-success"><span>Estimated ITC:</span> <span class="font-bold">₹0.00</span></div>
+                            <div class="flex justify-between border-b border-base-300 pb-2 mb-2"><span>GSTR-1 Total Sales:</span> <span class="font-bold">₹ 0.00</span></div>
+                            <div class="flex justify-between border-b border-base-300 pb-2 mb-2"><span>GSTR-2 Total Purchases:</span> <span class="font-bold">₹ 0.00</span></div>
+                            <div class="flex justify-between text-success"><span>Estimated ITC:</span> <span class="font-bold">₹ 0.00</span></div>
                         </div>
                     </div>
                 </div>
@@ -443,7 +445,7 @@
                     <input type="text" id="login-user" placeholder="User ID" class="input input-bordered text-base-content" />
                     <input type="password" id="login-pass" placeholder="Password" class="input input-bordered text-base-content" />
                 </div>
-                <button id="btn-login" class="btn bg-sky-500 hover:bg-sky-600 text-white border-none w-full mt-4">Secure Login</button>
+                <button id="btn-login" class="btn bg-sky-500 hover:bg-sky-600 text-white border-none w-full mt-4 font-bold">Secure Login</button>
                 <p id="login-msg" class="text-error text-sm mt-2 font-bold"></p>
                 <div class="text-xs opacity-50 mt-4">Admin: admin / admin<br>Staff: User / User</div>
             </div>
@@ -468,7 +470,7 @@
                             </svg>
                         </div>
                         <div>
-                            <h1 class="text-3xl font-bold text-sky-500 mb-1">Printos</h1>
+                            <h1 class="text-3xl font-bold text-sky-500">Printos</h1>
                             <p class="text-xs opacity-60 uppercase font-bold tracking-widest">Digital Solutions</p>
                         </div>
                     </div>
@@ -496,11 +498,12 @@
                 <div class="flex justify-end pt-4 border-t border-base-200">
                     <div class="text-right">
                         <p class="text-sm opacity-60">Amount Due</p>
-                        <h2 class="text-3xl font-bold text-sky-500">₹<span id="inv-total">0.00</span></h2>
+                        <h2 class="text-3xl font-bold text-sky-500">₹ <span id="inv-total">0.00</span></h2>
                     </div>
                 </div>
             </div>
-            <div class="modal-action">
+            <div class="modal-action gap-2">
+                <button id="btn-wa-invoice" class="btn bg-green-500 hover:bg-green-600 text-white border-none rounded-xl shadow-lg shadow-green-500/20 font-bold"><i class="fa-brands fa-whatsapp text-lg"></i> Share via WhatsApp</button>
                 <button id="btn-print-sys" class="btn bg-sky-500 hover:bg-sky-600 text-white border-none px-8 rounded-xl font-bold shadow-lg shadow-sky-500/20">Print PDF</button>
             </div>
         </div>
@@ -540,14 +543,14 @@
             <h3 class="font-bold text-xl mb-4">Manage Users</h3>
             
             <div class="overflow-auto mb-6 max-h-48 border border-base-300 rounded-lg">
-                <table class="table table-sm w-full">
+                <table class="table table-sm w-full text-base-content">
                     <thead class="bg-base-200"><tr><th>User ID</th><th>Role</th></tr></thead>
                     <tbody id="users-list-body"></tbody>
                 </table>
             </div>
             
             <h4 class="font-bold mb-2">Add New User</h4>
-            <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="grid grid-cols-2 gap-4 mb-4 text-base-content">
                 <input type="text" id="new-user-id" placeholder="User ID" class="input input-bordered w-full" />
                 <input type="password" id="new-user-pass" placeholder="Password" class="input input-bordered w-full" />
                 <select id="new-user-role" class="select select-bordered w-full col-span-2">
@@ -569,7 +572,8 @@
         <div class="form-control gap-4 flex-1 text-base-content">
             <div class="space-y-1">
                 <label class="text-xs font-bold opacity-50 uppercase pl-1 tracking-wider">Client Name <span class="text-error">*</span></label>
-                <input type="text" id="quick-lead-name" placeholder="Contact Name" class="input input-bordered w-full" />
+                <input type="text" id="quick-lead-name" list="lead-list" placeholder="Contact Name" class="input input-bordered w-full" />
+                <datalist id="lead-list"></datalist>
             </div>
             <div class="space-y-1">
                 <label class="text-xs font-bold opacity-50 uppercase pl-1 tracking-wider">Lead Source</label>
@@ -604,8 +608,12 @@
                 <textarea id="quick-lead-comments" class="textarea textarea-bordered w-full h-24 text-sm" placeholder="Enter comments here... (Min 10 words)"></textarea>
                 <div class="text-right mt-1"><span id="word-count-msg" class="text-xs font-bold text-error">0/10 words</span></div>
             </div>
+            <label class="cursor-pointer label mt-2 justify-start gap-3 border bg-base-200 p-2 rounded-lg">
+                <input type="checkbox" id="quick-lead-wa-notify" class="checkbox checkbox-success checkbox-sm" />
+                <span class="label-text font-bold text-success"><i class="fa-brands fa-whatsapp text-lg"></i> Notify on WhatsApp</span>
+            </label>
         </div>
-        <button id="btn-save-quick-lead" class="btn w-full mt-6 text-white font-bold rounded-xl shadow-lg bg-slate-300 cursor-not-allowed border-none shrink-0 transition-all duration-300" disabled>Save Lead</button>
+        <button id="btn-save-quick-lead" class="btn w-full mt-6 text-white font-bold rounded-xl shadow-lg bg-slate-300 cursor-not-allowed border-none shrink-0 transition-all duration-300 font-bold" disabled>Save Lead</button>
     </div>
 
     <!-- FAB -->
@@ -657,7 +665,44 @@
                 self.base_amt = self.qty * self.price
                 self.tax_amt = (self.base_amt * self.gst_percent) / 100
                 self.total = self.base_amt + self.tax_amt
-            def to_dict(self): return self.__dict__
+                
+            def to_dict(self): 
+                return self.__dict__
+                
+            @classmethod
+            def from_dict(cls, d):
+                tx = cls(d['type'], d['doc_type'], d.get('ref_no', ''), d['party'], d['item'], d['qty'], d['price'], d['gst_percent'], d['status'])
+                tx.id = d['id']
+                tx.date = d['date']
+                tx.base_amt = d['base_amt']
+                tx.tax_amt = d['tax_amt']
+                tx.total = d['total']
+                return tx
+
+        # --- LOCAL STORAGE AUTO-SAVE ---
+        def load_state():
+            global ledger, inventory, leads, company_db, users
+            try:
+                if window.localStorage.getItem("printos_ledger"):
+                    ledger_data = json.loads(window.localStorage.getItem("printos_ledger"))
+                    ledger = [Transaction.from_dict(d) for d in ledger_data]
+                if window.localStorage.getItem("printos_inventory"):
+                    inventory = json.loads(window.localStorage.getItem("printos_inventory"))
+                if window.localStorage.getItem("printos_leads"):
+                    leads = json.loads(window.localStorage.getItem("printos_leads"))
+                if window.localStorage.getItem("printos_company_db"):
+                    company_db = set(json.loads(window.localStorage.getItem("printos_company_db")))
+                if window.localStorage.getItem("printos_users"):
+                    users = json.loads(window.localStorage.getItem("printos_users"))
+            except Exception as e:
+                print(f"Error loading state: {e}")
+
+        def save_state():
+            window.localStorage.setItem("printos_ledger", json.dumps([t.to_dict() for t in ledger]))
+            window.localStorage.setItem("printos_inventory", json.dumps(inventory))
+            window.localStorage.setItem("printos_leads", json.dumps(leads))
+            window.localStorage.setItem("printos_company_db", json.dumps(list(company_db)))
+            window.localStorage.setItem("printos_users", json.dumps(users))
 
         # --- HELPERS ---
         def format_short_amt(val):
@@ -708,6 +753,8 @@
             if u in users and users[u]["password"] == p:
                 current_user = u
                 current_role = users[u]["role"]
+                window.localStorage.setItem("session_user", current_user)
+                window.localStorage.setItem("session_role", current_role)
                 document["login-screen"].classList.add("fade-out")
                 window.setTimeout(lambda: document["login-screen"].style.setProperty("display", "none"), 500)
                 apply_permissions()
@@ -722,6 +769,8 @@
                 window.alert(f"SECURITY ALERT: You cannot logout. You must resolve {hot} HOT leads first!")
                 switch_view("view-leads")
             else:
+                window.localStorage.removeItem("session_user")
+                window.localStorage.removeItem("session_role")
                 document["login-screen"].style.removeProperty("display")
                 document["login-screen"].classList.remove("fade-out")
                 document["login-user"].value = ""
@@ -735,21 +784,17 @@
             document["roles_modal"].showModal()
             
         def render_users_list():
-            tbody = document["users-list-body"]
-            tbody.clear()
+            tbody = document["users-list-body"]; tbody.clear()
             for u, data in users.items():
                 row = html.TR()
-                row <= html.TD(u, Class="font-bold")
-                row <= html.TD(html.SPAN(data["role"], Class="badge badge-ghost badge-sm"))
+                row <= html.TD(u, Class="font-bold"); row <= html.TD(html.SPAN(data["role"], Class="badge badge-ghost badge-sm"))
                 tbody <= row
                 
         def save_new_user(evt):
             uid, pwd, role = document["new-user-id"].value.strip(), document["new-user-pass"].value, document["new-user-role"].value
             if not uid or not pwd: return
             users[uid] = {"password": pwd, "role": role}
-            render_users_list()
-            document["new-user-id"].value = ""
-            document["new-user-pass"].value = ""
+            save_state(); render_users_list(); document["new-user-id"].value = ""; document["new-user-pass"].value = ""
             document["success_modal"].showModal()
 
         # --- CORE FORM LOGIC ---
@@ -761,10 +806,10 @@
                 tx = Transaction("Sale", dtype, ref_no, cust, item, qty, price, gst, status)
                 ledger.append(tx)
                 if cust: company_db.add(cust)
-                refresh_all()
+                save_state(); refresh_all()
                 document["status-msg"].text = "Transaction saved successfully!"
                 document["status-msg"].class_name = "text-center text-sm font-bold mt-2 h-4 text-success"
-                document["sales-item"].value = ""; document["sales-price"].value = ""
+                document["sales-item"].value = ""; document["sales-price"].value = ""; document["sales-cust"].value = ""
                 check_credit_limit(cust)
                 window.setTimeout(lambda: document["status-msg"].setAttribute("text", ""), 3000)
             except Exception as e: window.alert(f"Error: {e}")
@@ -774,8 +819,10 @@
                 vendor, item, qty, cost, status = [document[i].value for i in ["purch-vendor", "purch-item", "purch-qty", "purch-cost", "purch-status"]]
                 tx = Transaction("Purchase", "Bill", f"PUR-{len(ledger)+1:03}", vendor, item, qty, cost, 0, status)
                 ledger.append(tx)
-                refresh_all()
-                window.alert("Purchase recorded!")
+                if vendor: company_db.add(vendor)
+                save_state(); refresh_all()
+                document["purch-vendor"].value = ""; document["purch-item"].value = ""; document["purch-cost"].value = ""
+                document["success_modal"].showModal()
             except Exception as e: window.alert(f"Error: {e}")
 
         def toggle_theme(evt):
@@ -800,13 +847,13 @@
             rec = sum(t.total for t in ledger if t.type == "Sale" and t.status == "Unpaid")
             pay = sum(t.total for t in ledger if t.type == "Purchase" and t.status == "Unpaid")
             
-            document["dash-sales"].text = format_short_amt(s)
-            document["dash-purchase"].text = format_short_amt(p)
-            document["dash-receivable"].text = format_short_amt(rec)
-            document["dash-payable"].text = format_short_amt(pay)
+            document["dash-sales"].text = f"₹ {format_short_amt(s)}"
+            document["dash-purchase"].text = f"₹ {format_short_amt(p)}"
+            document["dash-receivable"].text = f"₹ {format_short_amt(rec)}"
+            document["dash-payable"].text = f"₹ {format_short_amt(pay)}"
             
             net = s - p
-            prefix = "-₹" if net < 0 else "₹"
+            prefix = "-₹ " if net < 0 else "₹ "
             document["pl-net"].text = f"{prefix}{format_short_amt(abs(net))}"
             
             document["next-inv"].value = f"#DOC-{len(ledger)+1:03}"
@@ -821,7 +868,7 @@
                 document["header-alert"].classList.remove("hidden")
                 for n, d in inventory.items():
                     if d["qty"] < 5:
-                        li = html.LI(); li <= html.A(f"Low Stock: {n}", Class="text-error"); nl <= li
+                        li = html.LI(); li <= html.A(f"Low Stock: {n}", Class="text-error font-bold"); nl <= li
             else:
                 badge.classList.add("hidden"); empty.style.display="block"; document["header-alert"].classList.add("hidden")
 
@@ -834,11 +881,9 @@
                 row = html.TR(Class="hover")
                 row <= html.TD(t.date, Class="text-xs opacity-70")
                 det = html.DIV(); det <= html.DIV(t.party, Class="font-bold"); det <= html.DIV(f"{t.doc_type} | {t.ref_no}", Class="text-xs opacity-50")
-                row <= html.TD(det); row <= html.TD(f"₹{t.total:.2f}", Class="text-right font-bold")
-                
+                row <= html.TD(det); row <= html.TD(f"₹ {t.total:.2f}", Class="text-right font-bold")
                 status_class = "badge-success" if t.status == "Paid" else "badge-warning"
-                row <= html.TD(html.SPAN(t.status, Class=f"badge {status_class} badge-sm"), Class="text-center")
-                
+                row <= html.TD(html.SPAN(t.status, Class=f"badge {status_class} badge-sm font-bold"), Class="text-center")
                 btn = html.BUTTON(Class="btn btn-ghost btn-xs text-sky-500", id=f"p-{t.id}"); btn.bind("click", show_preview); btn <= html.I(Class="fa-solid fa-eye")
                 row <= html.TD(btn, Class="text-center"); tbody <= row
 
@@ -846,47 +891,58 @@
             tbody = document["inventory-body"]; tbody.clear()
             for n, d in inventory.items():
                 row = html.TR(Class="hover")
-                row <= html.TD(n, Class="font-bold"); row <= html.TD(d["category"]); row <= html.TD(str(d["qty"]), Class="text-right font-mono")
-                row <= html.TD(f"{d['cost']:.2f}"); row <= html.TD(f"{d['qty']*d['cost']:.2f}", Class="text-right font-bold"); row <= html.TD(html.SPAN("In Stock", Class="badge badge-success badge-sm"), Class="text-center"); tbody <= row
+                row <= html.TD(n, Class="font-bold text-base-content"); row <= html.TD(d["category"], Class="opacity-70"); row <= html.TD(str(d["qty"]), Class="text-right font-mono text-base-content")
+                row <= html.TD(f"{d['cost']:.2f}", Class="text-base-content"); row <= html.TD(f"{d['qty']*d['cost']:.2f}", Class="text-right font-bold text-base-content"); row <= html.TD(html.SPAN("In Stock", Class="badge badge-success badge-sm font-bold"), Class="text-center"); tbody <= row
 
         def render_leads():
             tbody = document["leads-body"]; tbody.clear()
-            if not leads: return (tbody <= html.TR(html.TD("No active leads", colspan="3", Class="text-center py-10 opacity-30")))
+            if not leads: return (tbody <= html.TR(html.TD("No active leads", colspan="3", Class="text-center py-10 opacity-30 text-base-content")))
             for l in leads:
-                row = html.TR(Class="hover"); row <= html.TD(l["name"], Class="font-bold"); row <= html.TD(l["source"], Class="opacity-70"); row <= html.TD(html.SPAN("NEW", Class="badge badge-info badge-sm")); tbody <= row
+                row = html.TR(Class="hover"); row <= html.TD(l["name"], Class="font-bold text-base-content"); row <= html.TD(l["source"], Class="opacity-70 text-base-content"); row <= html.TD(html.SPAN("NEW", Class="badge badge-info badge-sm font-bold text-white")); tbody <= row
 
         def render_receivables():
             tbody = document["receivables-body"]; tbody.clear()
             unpaid = [x for x in ledger if x.type=="Sale" and x.status=="Unpaid"]
-            if not unpaid: tbody <= html.TR(html.TD("Clean", colspan="3", Class="text-center opacity-30"))
+            if not unpaid: tbody <= html.TR(html.TD("Clean", colspan="3", Class="text-center opacity-30 text-base-content"))
             for t in unpaid:
-                row = html.TR(); row <= html.TD(t.date); row <= html.TD(t.party); row <= html.TD(f"₹{t.total:.2f}", Class="text-right font-bold text-warning"); tbody <= row
+                row = html.TR(); row <= html.TD(t.date, Class="text-base-content"); row <= html.TD(t.party, Class="text-base-content"); row <= html.TD(f"₹ {t.total:.2f}", Class="text-right font-bold text-warning"); tbody <= row
 
         def render_payables():
             tbody = document["payables-body"]; tbody.clear()
             unpaid = [x for x in ledger if x.type=="Purchase" and x.status=="Unpaid"]
-            if not unpaid: tbody <= html.TR(html.TD("Clean", colspan="3", Class="text-center opacity-30"))
+            if not unpaid: tbody <= html.TR(html.TD("Clean", colspan="3", Class="text-center opacity-30 text-base-content"))
             for t in unpaid:
-                row = html.TR(); row <= html.TD(t.date); row <= html.TD(t.party); row <= html.TD(f"₹{t.total:.2f}", Class="text-right font-bold text-error"); tbody <= row
+                row = html.TR(); row <= html.TD(t.date, Class="text-base-content"); row <= html.TD(t.party, Class="text-base-content"); row <= html.TD(f"₹ {t.total:.2f}", Class="text-right font-bold text-error"); tbody <= row
 
         def check_credit_limit(c):
             if not c: return
             out = sum(t.total for t in ledger if t.party.lower() == c.lower() and t.status == "Unpaid")
-            if out > 5000: document["warning-msg"].text = f"{c} balance: ₹{out:,.2f}."; document["warning_modal"].showModal()
+            if out > 5000: document["warning-msg"].text = f"{c} balance: ₹ {out:,.2f}."; document["warning_modal"].showModal()
 
         def update_customer_suggestions():
-            dl = document["customer-list"]; dl.clear()
-            for c in sorted(list(company_db)): dl <= html.OPTION(value=c)
+            for l_id in ["customer-list", "vendor-list", "lead-list"]:
+                dl = document[l_id]; dl.clear()
+                for c in sorted(list(company_db)): dl <= html.OPTION(value=c)
 
         def show_preview(evt):
             try:
                 idx = int(evt.target.closest("button").id.split("-")[1])
                 t = next(x for x in ledger if x.id == idx)
                 document["doc-title"].text = t.doc_type; document["inv-total"].text = f"{t.total:.2f}"; document["inv-num"].text = t.ref_no; document["inv-customer"].text = t.party; document["inv-date"].text = t.date
-                tbody = document["inv-items"]; tbody.clear(); row = html.TR(); row <= html.TD(t.item); row <= html.TD(str(t.qty), Class="text-right"); row <= html.TD(f"₹{t.total:.2f}", Class="text-right"); tbody <= row
+                tbody = document["inv-items"]; tbody.clear(); row = html.TR(); row <= html.TD(t.item); row <= html.TD(str(t.qty), Class="text-right"); row <= html.TD(f"₹ {t.total:.2f}", Class="text-right"); tbody <= row
                 document["invoice_modal"].showModal()
             except: pass
             
+        def share_invoice_wa(evt):
+            mob = window.prompt("Enter customer WhatsApp number (e.g., +919876543210):", "")
+            if mob:
+                mob_clean = "".join([c for c in mob if c.isdigit() or c == "+"])
+                inv_no = document["inv-num"].text
+                amt = document["inv-total"].text
+                inv_text = f"Hello, your invoice {inv_no} for ₹ {amt} from Printos Digital Solutions is ready."
+                msg = window.encodeURIComponent(inv_text)
+                window.open(f"https://wa.me/{mob_clean}?text={msg}", "_blank")
+
         def validate_lead_form(evt):
             n, m, e, c = [document[i].value.strip() for i in ["quick-lead-name", "quick-lead-mobile", "quick-lead-email", "quick-lead-comments"]]
             words = len([w for w in c.split() if w])
@@ -903,14 +959,21 @@
             full_mob = cc + m if m else ""
             if any(l["name"].lower() == n.lower() for l in leads): return window.alert("Lead exists!")
             leads.append({"name": n, "source": s, "mobile": full_mob, "email": e, "comments": c, "date": datetime.date.today().strftime("%Y-%m-%d"), "status": "New"})
+            if n: company_db.add(n)
+            if document["quick-lead-wa-notify"].checked and full_mob:
+                msg = window.encodeURIComponent(f"Hi {n},\nThank you for reaching out to Printos. We will get back to you shortly.")
+                window.open(f"https://wa.me/{full_mob}?text={msg}", "_blank")
             for i in ["name", "mobile", "email", "comments"]: document[f"quick-lead-{i}"].value = ""
-            validate_lead_form(None); close_slide_over(None); render_leads(); document["success-msg"].text = f"Lead '{n}' saved!"; document["success_modal"].showModal()
+            document["quick-lead-source"].value = "LinkedIn"
+            document["quick-lead-wa-notify"].checked = False
+            validate_lead_form(None); save_state(); close_slide_over(None); refresh_all()
+            document["success-msg"].text = f"Lead '{n}' saved!"; document["success_modal"].showModal()
             
         def update_form_fields(evt):
             dt = document["sales-type"].value
             for i, s in [("field-price", dt!="Delivery Note"), ("field-gst", dt!="Delivery Note"), ("field-status", dt not in ["Quotation", "Delivery Note", "Purchase Order"])]:
                 document[i].style.display = "block" if s else "none"
-            document["lbl-customer"].text = "Receiver" if dt=="Delivery Note" else "Customer"
+            document["lbl-customer"].text = "Receiver" if dt=="Delivery Note" else "Customer Name"
 
         def download_backup(evt):
             data = {"ledger": [t.to_dict() for t in ledger], "inventory": inventory, "leads": leads}
@@ -926,6 +989,7 @@
 
         def init():
             try:
+                load_state()
                 for v in ["dashboard", "create", "ledger", "receivables", "leads", "purchase", "payables", "inventory", "accounting", "gst", "utils"]:
                     safe_bind(f"nav-{v}", "click", lambda e, v=v: switch_view(f"view-{v}"))
                 safe_bind("btn-login", "click", login_handler); safe_bind("btn-logout-sidebar", "click", logout_handler)
@@ -938,14 +1002,30 @@
                 safe_bind("fab-sales", "click", lambda e: [switch_view("view-create"), document.select(".fab-menu")[0].classList.remove("active")])
                 safe_bind("fab-purchase", "click", lambda e: [switch_view("view-purchase"), document.select(".fab-menu")[0].classList.remove("active")])
                 safe_bind("fab-lead", "click", lambda e: [open_slide_over(e), document.select(".fab-menu")[0].classList.remove("active")])
+                safe_bind("btn-wa-invoice", "click", share_invoice_wa)
 
                 global chart_main
-                chart_main = window.Chart.new(document["mainChart"].getContext("2d"), {"type": "bar", "data": {"labels": ["Current Period"], "datasets": [{"label": "Sales", "data": [0], "backgroundColor": "#0ea5e9", "borderRadius": 8}, {"label": "Purch", "data": [0], "backgroundColor": "#8b5cf6", "borderRadius": 8}]}})
-                window.Chart.new(document["pieChart"].getContext("2d"), {"type": "doughnut", "data": {"labels": ["Cash", "Credit"], "datasets": [{"data": [70, 30], "backgroundColor": ["#10b981", "#f59e0b"]}]}, "options": {"cutout": "70%"}})
+                if document.getElementById("mainChart"):
+                    chart_main = window.Chart.new(document["mainChart"].getContext("2d"), {"type": "bar", "data": {"labels": ["Current Period"], "datasets": [{"label": "Sales", "data": [0], "backgroundColor": "#2d9ed8", "borderRadius": 8}, {"label": "Purch", "data": [0], "backgroundColor": "#8b5cf6", "borderRadius": 8}]}})
+                if document.getElementById("pieChart"):
+                    window.Chart.new(document["pieChart"].getContext("2d"), {"type": "doughnut", "data": {"labels": ["Cash", "Credit"], "datasets": [{"data": [70, 30], "backgroundColor": ["#10b981", "#f59e0b"]}]}, "options": {"cutout": "70%"}})
+                
                 refresh_all(); document["loader"].style.display = "none"
+                session_u, session_r = window.localStorage.getItem("session_user"), window.localStorage.getItem("session_role")
+                if session_u and session_r:
+                    global current_user, current_role
+                    current_user, current_role = session_u, session_r
+                    document["login-screen"].style.setProperty("display", "none"); apply_permissions()
             except Exception as e: document["loader-error"].innerHTML = f"<div class='bg-red-100 text-red-600 p-4 rounded-lg shadow font-mono text-sm max-w-lg'>Error: {str(e)}</div>"
 
         init()
+    </script>
+    
+    <script type="text/javascript">
+        window.addEventListener('load', function() {
+            if (typeof brython !== 'undefined') { brython(); }
+            else { document.getElementById('loader-error').innerHTML = "<div class='bg-red-100 text-red-600 p-4 rounded-lg shadow font-mono text-sm max-w-lg'>Critical Error: Brython library failed to load. Please check your internet connection.</div>"; }
+        });
     </script>
 </body>
 </html>
