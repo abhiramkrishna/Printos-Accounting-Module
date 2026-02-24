@@ -10,7 +10,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class',
+            darkMode: ['class', '[data-theme="dark"]'],
             theme: {
                 extend: {
                     colors: { slate: { 850: '#151e2e', 900: '#0f172a' } }
@@ -39,7 +39,7 @@
         #slide-over-panel.open { transform: translateX(0); }
         #slide-over-panel.closed { transform: translateX(100%); }
         
-        .fab-container { position: absolute; bottom: 2rem; right: 2rem; z-index: 40; }
+        .fab-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 50; }
         .fab-menu { position: absolute; bottom: 4.5rem; right: 0; display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end; opacity: 0; pointer-events: none; transform: translateY(10px); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
         .fab-menu.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
 
@@ -418,15 +418,60 @@
                     </div>
                 </div>
 
-                <!-- E. INVENTORY MODULE -->
+                <!-- E. INVENTORY MODULE (NOW WITH ADJUSTMENT PANEL) -->
                 <div id="view-inventory" class="view-section">
-                    <div class="card bg-base-100 shadow-xl h-[700px]">
-                        <div class="card-body p-0">
-                            <div class="p-6 border-b border-base-300 flex justify-between items-center text-base-content">
-                                <h3 class="card-title font-bold">Stock Summary</h3>
-                                <button id="btn-export-csv" class="btn btn-sm btn-outline"><i class="fa-solid fa-download"></i> Export CSV</button>
+                    
+                    <!-- New Manual Adjustment Card -->
+                    <div class="card bg-base-100 shadow-sm border border-base-300 rounded-3xl p-6 mb-6">
+                        <h2 class="card-title font-bold mb-4 text-base-content">Manage Stock (Add / Remove)</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+                            <div class="form-control col-span-2">
+                                <label class="label pb-1"><span class="label-text text-xs font-bold opacity-70">Item Name</span></label>
+                                <input type="text" id="inv-adj-item" list="inv-item-list" placeholder="Item Name..." class="input input-bordered input-sm w-full shadow-inner">
+                                <datalist id="inv-item-list"></datalist>
                             </div>
-                            <div class="overflow-auto"><table class="table table-zebra w-full text-base-content"><thead class="sticky top-0 bg-base-300"><tr><th>Item</th><th>Category</th><th class="text-right">Qty</th><th class="text-right">Avg Cost</th><th class="text-right">Total Value</th><th class="text-center">Status</th></tr></thead><tbody id="inventory-body"></tbody></table></div>
+                            <div class="form-control">
+                                <label class="label pb-1"><span class="label-text text-xs font-bold opacity-70">Action</span></label>
+                                <select id="inv-adj-action" class="select select-bordered select-sm w-full shadow-inner">
+                                    <option value="add">Add (+)</option>
+                                    <option value="remove">Remove (-)</option>
+                                </select>
+                            </div>
+                            <div class="form-control">
+                                <label class="label pb-1"><span class="label-text text-xs font-bold opacity-70">Qty</span></label>
+                                <input type="number" id="inv-adj-qty" value="1" min="1" class="input input-bordered input-sm w-full shadow-inner">
+                            </div>
+                            <div class="form-control">
+                                <label class="label pb-1"><span class="label-text text-xs font-bold opacity-70">Unit Cost (₹)</span></label>
+                                <input type="number" id="inv-adj-cost" placeholder="0.00" class="input input-bordered input-sm w-full shadow-inner">
+                            </div>
+                            <button id="btn-adj-stock" class="btn btn-sm bg-[#2d9ed8] hover:bg-[#2281b3] text-white border-none shadow-md h-8">Update Stock</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                            <div class="form-control">
+                                <label class="label pb-1"><span class="label-text text-xs font-bold opacity-70">Category (New items)</span></label>
+                                <input type="text" id="inv-adj-cat" placeholder="e.g., Raw Material, Consumable" class="input input-bordered input-sm w-full shadow-inner">
+                            </div>
+                            <div class="form-control">
+                                <label class="label pb-1"><span class="label-text text-xs font-bold opacity-70">Reason / Notes</span></label>
+                                <input type="text" id="inv-adj-reason" placeholder="e.g., Purchased, Damaged, Returned, Corrected" class="input input-bordered input-sm w-full shadow-inner">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inventory Table Card -->
+                    <div class="card bg-base-100 shadow-sm border border-base-300 rounded-3xl h-[500px] flex flex-col">
+                        <div class="p-6 border-b border-base-200 flex justify-between items-center text-base-content shrink-0">
+                            <h3 class="card-title font-bold">Current Stock Summary</h3>
+                            <button id="btn-export-csv" class="btn btn-sm btn-outline shadow-sm"><i class="fa-solid fa-download"></i> Export CSV</button>
+                        </div>
+                        <div class="overflow-auto flex-1 p-0 m-0 rounded-b-3xl">
+                            <table class="table table-zebra w-full text-base-content m-0">
+                                <thead class="sticky top-0 bg-base-300 shadow-sm z-10">
+                                    <tr><th>Item</th><th>Category</th><th class="text-right">Qty</th><th class="text-right">Avg Cost</th><th class="text-right">Total Value</th><th class="text-center">Status</th></tr>
+                                </thead>
+                                <tbody id="inventory-body"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -616,66 +661,6 @@
             <div class="modal-action">
                 <button id="btn-skip-new-client" class="btn btn-ghost">Skip</button>
                 <button id="btn-save-new-client" class="btn bg-sky-500 hover:bg-sky-600 text-white border-none shadow-lg shadow-sky-500/20">Save Info</button>
-            </div>
-        </div>
-    </dialog>
-
-    <dialog id="invoice_modal" class="modal">
-        <div class="modal-box w-11/12 max-w-3xl bg-base-100 text-base-content rounded-3xl">
-            <form method="dialog">
-                <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
-            </form>
-            <h3 class="font-bold text-xl mb-6">Document Preview</h3>
-            <div id="printable-area" class="p-8 border border-base-300 rounded-2xl bg-base-100">
-                <div class="flex justify-between mb-8 border-b border-base-300 pb-6">
-                    <div class="flex items-center gap-3">
-                        <div class="w-16 h-16 flex items-center justify-center">
-                            <svg class="app-logo-svg" viewBox="200 250 180 230" xmlns="http://www.w3.org/2000/svg">
-                                <path class="cls-2" d="M355.17,356.98c0,33.76-27.37,61.13-61.13,61.13-7.42,0-14.54-1.32-21.12-3.75v-57.38c0-11.65,9.47-21.13,21.12-21.13s21.13,9.48,21.13,21.13-9.48,21.13-21.13,21.13c-4.53,0-8.73-1.43-12.17-3.88v22.04c3.85,1.2,7.93,1.84,12.17,1.84,22.68,0,41.13-18.45,41.13-41.13s-18.45-41.13-41.13-41.13-41.12,18.45-41.12,41.13v45.23c-12.29-11.18-20.01-27.3-20.01-45.23,0-33.76,27.37-61.13,61.13-61.13s61.13,27.37,61.13,61.13Z"/>
-                                <path class="cls-1" d="M335.17,356.98c0,22.68-18.45,41.13-41.13,41.13-4.24,0-8.32-.64-12.17-1.84v-22.04c3.44,2.45,7.64,3.88,12.17,3.88,11.65,0,21.13-9.48,21.13-21.13s-9.48-21.13-21.13-21.13-21.12,9.48-21.12,21.13v57.38c-7.46-2.74-14.23-6.9-20-12.15v-45.23c0-22.68,18.44-41.13,41.12-41.13s41.13,18.45,41.13,41.13Z"/>
-                                <polyline class="cls-2" points="272.92 414.36 272.92 446.45 252.92 446.45 252.92 402.21"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h1 class="text-3xl font-bold text-sky-500 mb-1">Printos</h1>
-                            <p class="text-xs opacity-60 uppercase font-bold tracking-widest">Digital Solutions</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <h2 class="text-2xl font-bold uppercase tracking-tight text-base-content" id="doc-title">INVOICE</h2>
-                        <p id="inv-num" class="font-mono text-sm font-bold opacity-70">--</p>
-                        <p id="inv-date" class="text-xs opacity-50 mt-1">--</p>
-                    </div>
-                </div>
-                <div class="mb-8">
-                    <p class="text-xs font-bold opacity-40 uppercase mb-1">Billed To</p>
-                    <h3 class="text-2xl font-bold" id="inv-customer">Customer</h3>
-                    <p id="inv-project" class="text-sm opacity-60 mt-1">Project: --</p>
-                </div>
-                <table class="table table-sm w-full mb-6">
-                    <thead class="bg-base-200 text-base-content">
-                        <tr>
-                            <th>Description</th>
-                            <th class="text-right">Qty</th>
-                            <th class="text-right">Price</th>
-                            <th class="text-right">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody id="inv-items"></tbody>
-                </table>
-                <div class="flex justify-end pt-4 border-t border-base-200 mt-4">
-                    <div class="w-64 space-y-2 text-right">
-                        <div class="flex justify-between text-sm opacity-70 font-mono"><span>Subtotal</span> <span>₹ <span id="inv-sub">0.00</span></span></div>
-                        <div id="tax-cgst-row" class="flex justify-between text-sm opacity-70 font-mono"><span>CGST</span> <span>₹ <span id="inv-cgst">0.00</span></span></div>
-                        <div id="tax-sgst-row" class="flex justify-between text-sm opacity-70 font-mono"><span>SGST</span> <span>₹ <span id="inv-sgst">0.00</span></span></div>
-                        <div id="tax-igst-row" class="flex justify-between text-sm opacity-70 hidden font-mono"><span>IGST</span> <span>₹ <span id="inv-igst">0.00</span></span></div>
-                        <div class="flex justify-between font-bold text-lg border-t border-base-300 pt-2 mt-2 font-mono"><span>Total</span> <span class="text-sky-500">₹ <span id="inv-total">0.00</span></span></div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-action gap-2">
-                <button id="btn-wa-invoice" class="btn bg-green-500 hover:bg-green-600 text-white border-none rounded-xl shadow-lg shadow-green-500/20 font-bold"><i class="fa-brands fa-whatsapp text-lg"></i> Send Copy</button>
-                <button id="btn-print-sys" class="btn bg-sky-500 hover:bg-sky-600 text-white border-none px-8 rounded-xl font-bold shadow-lg shadow-sky-500/20">Print PDF</button>
             </div>
         </div>
     </dialog>
@@ -1030,13 +1015,14 @@
             try: document.getElementById("new_client_modal").close()
             except: document["new_client_modal"].removeAttribute("open")
 
-        # --- CORE FORM LOGIC & AUTO JOURNAL ---
+        # --- CORE FORM LOGIC & AUTO JOURNAL / AUTO INVENTORY ---
         def save_sales(evt):
             try:
                 ref_no = document["next-inv"].value
                 dtype, cust, item, qty, price, gst, gst_type, status = [document[i].value for i in ["sales-type", "sales-cust", "sales-item", "sales-qty", "sales-price", "sales-gst", "sales-gst-type", "sales-status"]]
                 if dtype == "Delivery Note": price = "0"; gst = "0"
                 if not item or not price: return window.alert("Fill required fields (Item & Price)")
+                qty = int(qty)
                 
                 tx = Transaction("Sale", dtype, ref_no, cust, item, qty, price, gst, status, gst_type)
                 ledger.append(tx)
@@ -1047,6 +1033,13 @@
                     credit_ac = "Sales Revenue"
                     je = JournalEntry(tx.date, debit_ac, credit_ac, tx.total, f"Auto-generated for {dtype} #{ref_no}")
                     journal_entries.append(je)
+
+                # Auto Inventory Deduction
+                if dtype in ["Invoice", "Delivery Note"]:
+                    if item in inventory:
+                        inventory[item]["qty"] -= qty
+                    else:
+                        inventory[item] = {"qty": -qty, "cost": float(price), "category": "Auto-Created"}
                 
                 is_new_client = False
                 if cust and cust not in company_db:
@@ -1066,7 +1059,10 @@
 
         def save_purchase(evt):
             try:
-                vendor, item, qty, cost, status = [document[i].value for i in ["purch-vendor", "purch-item", "purch-qty", "purch-cost", "purch-status"]]
+                vendor, item, qty_str, cost_str, status = [document[i].value for i in ["purch-vendor", "purch-item", "purch-qty", "purch-cost", "purch-status"]]
+                qty = int(qty_str)
+                cost = float(cost_str)
+                
                 ref_no = f"PUR-{len(ledger)+1:03}"
                 tx = Transaction("Purchase", "Bill", ref_no, vendor, item, qty, cost, 0, status)
                 ledger.append(tx)
@@ -1076,6 +1072,17 @@
                 credit_ac = "Cash/Bank" if status == "Paid" else f"Accounts Payable - {vendor}"
                 je = JournalEntry(tx.date, debit_ac, credit_ac, tx.total, f"Auto-generated for Purchase #{ref_no}")
                 journal_entries.append(je)
+
+                # Auto Inventory Addition
+                if item in inventory:
+                    c_qty = inventory[item]["qty"]
+                    c_cost = inventory[item]["cost"]
+                    n_qty = c_qty + qty
+                    n_cost = ((c_qty * c_cost) + (qty * cost)) / n_qty if n_qty > 0 else cost
+                    inventory[item]["qty"] = n_qty
+                    inventory[item]["cost"] = n_cost
+                else:
+                    inventory[item] = {"qty": qty, "cost": cost, "category": document["purch-cat"].value}
                 
                 is_new_client = False
                 if vendor and vendor not in company_db:
@@ -1097,14 +1104,79 @@
                 if not db or not cr or not amt: return window.alert("Fill required fields.")
                 je = JournalEntry(d, db, cr, amt, desc)
                 journal_entries.append(je)
-                save_state(); render_journal()
+                save_state()
+                render_journal()
                 for i in ["j-debit", "j-credit", "j-amt", "j-desc"]: document[i].value = ""
             except Exception as e: window.alert(f"Error: {e}")
 
+        # --- MANUAL STOCK ADJUSTMENT LOGIC ---
+        def auto_fill_cost(evt):
+            item = document["inv-adj-item"].value.strip()
+            if item in inventory:
+                document["inv-adj-cost"].value = str(inventory[item]["cost"])
+                document["inv-adj-cat"].value = inventory[item]["category"]
+
+        def update_inventory_suggestions():
+            if document.getElementById("inv-item-list"):
+                dl = document["inv-item-list"]; dl.clear()
+                for i in sorted(inventory.keys()): dl <= html.OPTION(value=i)
+
+        def adjust_stock(evt):
+            item = document["inv-adj-item"].value.strip()
+            action = document["inv-adj-action"].value
+            try: qty = int(document["inv-adj-qty"].value)
+            except: qty = 0
+            try: cost = float(document["inv-adj-cost"].value)
+            except: cost = 0.0
+            cat = document["inv-adj-cat"].value.strip() or "General"
+            reason = document["inv-adj-reason"].value.strip() or "Manual Adjustment"
+
+            if not item or qty <= 0:
+                return window.alert("Please provide a valid Item Name and Quantity.")
+
+            if item in inventory:
+                curr_qty = inventory[item]["qty"]
+                curr_cost = inventory[item]["cost"]
+                if action == "add":
+                    new_qty = curr_qty + qty
+                    new_cost = ((curr_qty * curr_cost) + (qty * cost)) / new_qty if new_qty > 0 else cost
+                    inventory[item]["qty"] = new_qty
+                    inventory[item]["cost"] = new_cost
+                else:
+                    inventory[item]["qty"] -= qty
+            else:
+                if action == "remove":
+                    return window.alert("Item not found in inventory.")
+                inventory[item] = {"qty": qty, "cost": cost, "category": cat}
+
+            # Log to Journal
+            if action == "add":
+                total_val = qty * cost
+                je = JournalEntry(datetime.date.today().strftime("%Y-%m-%d"), "Inventory", "Adjustment / Equity", total_val, f"Stock Add: {item} ({reason})")
+                journal_entries.append(je)
+            else:
+                val = qty * inventory[item]["cost"] if item in inventory else 0
+                je = JournalEntry(datetime.date.today().strftime("%Y-%m-%d"), "Stock Loss / COGS", "Inventory", val, f"Stock Remove: {item} ({reason})")
+                journal_entries.append(je)
+
+            document["inv-adj-item"].value = ""
+            document["inv-adj-qty"].value = "1"
+            document["inv-adj-cost"].value = ""
+            document["inv-adj-reason"].value = ""
+            
+            save_state()
+            refresh_all()
+            document["success-msg"].text = "Stock Adjusted Successfully!"
+            document["success_modal"].showModal()
+
         def toggle_theme(evt):
             h = document.select("html")[0]
-            t = "dark" if h.getAttribute("data-theme") == "light" else "light"
-            h.setAttribute("data-theme", t)
+            new = "dark" if evt.target.checked else "light"
+            h.setAttribute("data-theme", new)
+            if new == "dark":
+                h.classList.add("dark")
+            else:
+                h.classList.remove("dark")
             
         def toggle_accessibility(action, evt=None):
             b = document.select("body")[0]
@@ -1129,6 +1201,7 @@
         def refresh_all():
             render_ledger(); render_inventory(); render_leads(); render_receivables(); render_payables()
             render_delivery(); render_journal(); render_balancesheet(); update_dash(); update_customer_suggestions()
+            update_inventory_suggestions()
 
         def update_dash():
             s = sum(t.total for t in ledger if t.type == "Sale" and t.doc_type != "Delivery Note")
@@ -1267,7 +1340,13 @@
             for n, d in inventory.items():
                 row = html.TR(Class="hover")
                 row <= html.TD(n, Class="font-bold text-base-content"); row <= html.TD(d["category"], Class="opacity-70"); row <= html.TD(str(d["qty"]), Class="text-right font-mono text-base-content")
-                row <= html.TD(f"{d['cost']:.2f}", Class="text-base-content"); row <= html.TD(f"{d['qty']*d['cost']:.2f}", Class="text-right font-bold text-base-content"); row <= html.TD(html.SPAN("In Stock", Class="badge badge-success badge-sm font-bold"), Class="text-center"); tbody <= row
+                row <= html.TD(f"₹ {d['cost']:.2f}", Class="text-base-content font-mono text-right"); row <= html.TD(f"₹ {d['qty']*d['cost']:.2f}", Class="text-right font-bold text-base-content font-mono")
+                
+                if d["qty"] < 0: status_span = html.SPAN("Deficit", Class="badge badge-error badge-sm font-bold")
+                elif d["qty"] < 5: status_span = html.SPAN("Low Stock", Class="badge badge-warning badge-sm font-bold")
+                else: status_span = html.SPAN("In Stock", Class="badge badge-success badge-sm font-bold")
+                
+                row <= html.TD(status_span, Class="text-center"); tbody <= row
 
         def render_leads():
             tbody = document["leads-body"]; tbody.clear()
@@ -1403,6 +1482,15 @@
         def open_slide_over(evt): document["slide-over-panel"].classList.replace("closed", "open")
         def close_slide_over(evt): document["slide-over-panel"].classList.replace("open", "closed")
 
+        def toggle_fab(evt):
+            menu = document.select(".fab-menu")[0]
+            if "active" in menu.classList: menu.classList.remove("active")
+            else: menu.classList.add("active")
+
+        def fab_go_sales(evt): switch_view("view-create"); document.select(".fab-menu")[0].classList.remove("active")
+        def fab_go_purchase(evt): switch_view("view-purchase"); document.select(".fab-menu")[0].classList.remove("active")
+        def fab_go_lead(evt): open_slide_over(None); document.select(".fab-menu")[0].classList.remove("active")
+
         def safe_bind(el_id, event, handler):
             try: document[el_id].bind(event, handler)
             except KeyError: pass
@@ -1422,11 +1510,13 @@
                 safe_bind("btn-user-roles", "click", open_roles_modal); safe_bind("btn-save-user", "click", save_new_user)
                 for i in ["name", "mobile", "email", "comments"]: safe_bind(f"quick-lead-{i}", "input", validate_lead_form)
                 safe_bind("btn-save-quick-lead", "click", save_quick_lead); safe_bind("btn-open-lead-panel", "click", open_slide_over); safe_bind("close-slide-over", "click", close_slide_over)
-                safe_bind("btn-backup", "click", download_backup); safe_bind("fab-main-btn", "click", lambda e: document.select(".fab-menu")[0].classList.toggle("active"))
-                safe_bind("fab-sales", "click", lambda e: [switch_view("view-create"), document.select(".fab-menu")[0].classList.remove("active")])
-                safe_bind("fab-purchase", "click", lambda e: [switch_view("view-purchase"), document.select(".fab-menu")[0].classList.remove("active")])
-                safe_bind("fab-lead", "click", lambda e: [open_slide_over(e), document.select(".fab-menu")[0].classList.remove("active")])
+                safe_bind("btn-backup", "click", download_backup); safe_bind("fab-main-btn", "click", toggle_fab)
+                safe_bind("fab-sales", "click", fab_go_sales); safe_bind("fab-purchase", "click", fab_go_purchase); safe_bind("fab-lead", "click", fab_go_lead)
                 safe_bind("btn-wa-invoice", "click", share_invoice_wa)
+                
+                # New Stock Adjust Binds
+                safe_bind("btn-adj-stock", "click", adjust_stock)
+                safe_bind("inv-adj-item", "input", auto_fill_cost)
                 
                 if document.getElementById("j-date"): document["j-date"].value = datetime.date.today().strftime("%Y-%m-%d")
 
