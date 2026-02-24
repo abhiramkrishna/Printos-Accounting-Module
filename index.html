@@ -13,12 +13,7 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    colors: {
-                        slate: {
-                            850: '#151e2e',
-                            900: '#0f172a'
-                        }
-                    }
+                    colors: { slate: { 850: '#151e2e', 900: '#0f172a' } }
                 }
             }
         }
@@ -36,7 +31,7 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.3s ease; }
         
         .transition-all-300 { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         
@@ -45,13 +40,7 @@
         #slide-over-panel.closed { transform: translateX(100%); }
         
         .fab-container { position: absolute; bottom: 2rem; right: 2rem; z-index: 40; }
-        .fab-menu { 
-            position: absolute; bottom: 4.5rem; right: 0; 
-            display: flex; flex-direction: column; gap: 0.5rem; 
-            align-items: flex-end; 
-            opacity: 0; pointer-events: none; transform: translateY(10px);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-        }
+        .fab-menu { position: absolute; bottom: 4.5rem; right: 0; display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end; opacity: 0; pointer-events: none; transform: translateY(10px); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
         .fab-menu.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
 
         .view-section { display: none; opacity: 0; animation: fadeIn 0.3s ease-out forwards; }
@@ -60,17 +49,21 @@
         
         #loader { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
         
-        /* Optimized Logo Styles */
         .app-logo-svg { width: 100%; height: 100%; object-fit: contain; }
         .cls-1 { fill: #f9f3f8; stroke-width: 0px; }
         .cls-2 { fill: #2d9ed8; stroke-width: 0px; }
+        
+        /* Accessibility Classes */
+        body.text-large-mode { font-size: 1.15rem; }
+        body.text-large-mode .input, body.text-large-mode .btn, body.text-large-mode .select { font-size: 1.05rem; }
+        body.high-contrast-mode { filter: contrast(1.25) saturate(1.1); }
     </style>
 </head>
 
 <body class="h-screen overflow-hidden flex flex-col bg-base-200 text-base-content transition-colors duration-300">
 
     <!-- Loading -->
-    <div id="loader" class="bg-neutral text-neutral-content">
+    <div id="loader" class="bg-neutral text-neutral-content z-[9999]">
         <span class="loading loading-spinner loading-lg text-sky-500 mb-4"></span>
         <h2 class="text-lg font-bold">Initializing Printos...</h2>
         <div id="loader-error" class="mt-4 text-center"></div>
@@ -84,7 +77,6 @@
             <div class="p-6 sticky top-0 bg-base-100 z-10">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 flex-shrink-0">
-                        <!-- Tightly bounded viewBox for maximum scaling -->
                         <svg class="app-logo-svg drop-shadow-md" viewBox="200 250 180 230" xmlns="http://www.w3.org/2000/svg">
                             <path class="cls-2" d="M355.17,356.98c0,33.76-27.37,61.13-61.13,61.13-7.42,0-14.54-1.32-21.12-3.75v-57.38c0-11.65,9.47-21.13,21.12-21.13s21.13,9.48,21.13,21.13-9.48,21.13-21.13,21.13c-4.53,0-8.73-1.43-12.17-3.88v22.04c3.85,1.2,7.93,1.84,12.17,1.84,22.68,0,41.13-18.45,41.13-41.13s-18.45-41.13-41.13-41.13-41.12,18.45-41.12,41.13v45.23c-12.29-11.18-20.01-27.3-20.01-45.23,0-33.76,27.37-61.13,61.13-61.13s61.13,27.37,61.13,61.13Z"/>
                             <path class="cls-1" d="M335.17,356.98c0,22.68-18.45,41.13-41.13,41.13-4.24,0-8.32-.64-12.17-1.84v-22.04c3.44,2.45,7.64,3.88,12.17,3.88,11.65,0,21.13-9.48,21.13-21.13s-9.48-21.13-21.13-21.13-21.12,9.48-21.12,21.13v57.38c-7.46-2.74-14.23-6.9-20-12.15v-45.23c0-22.68,18.44-41.13,41.12-41.13s41.13,18.45,41.13,41.13Z"/>
@@ -101,9 +93,10 @@
 
                 <li class="menu-title text-xs uppercase tracking-wider opacity-50 mt-2" id="cat-sales">Sales Module</li>
                 <li><a id="nav-create"><i class="fa-solid fa-file-invoice-dollar w-4 text-center"></i> Create Invoice</a></li>
-                <li><a id="nav-ledger"><i class="fa-solid fa-book w-4 text-center"></i> Ledger</a></li>
+                <li><a id="nav-delivery"><i class="fa-solid fa-truck w-4 text-center"></i> Delivery Notes</a></li>
                 <li><a id="nav-receivables"><i class="fa-solid fa-hand-holding-dollar w-4 text-center"></i> Receivables</a></li>
                 <li><a id="nav-leads"><i class="fa-solid fa-users w-4 text-center"></i> Leads (CRM)</a></li>
+                <li><a id="nav-profiles"><i class="fa-solid fa-building w-4 text-center text-sky-500"></i> Company Profiles</a></li>
 
                 <li class="menu-title text-xs uppercase tracking-wider opacity-50 mt-2" id="cat-purch">Purchase Module</li>
                 <li><a id="nav-purchase"><i class="fa-solid fa-cart-shopping w-4 text-center"></i> Purchase Entry</a></li>
@@ -111,7 +104,9 @@
 
                 <li class="menu-title text-xs uppercase tracking-wider opacity-50 mt-2" id="cat-inv">Inventory & Accounts</li>
                 <li><a id="nav-inventory"><i class="fa-solid fa-boxes-stacked w-4 text-center"></i> Stock & Inventory</a></li>
-                <li><a id="nav-accounting"><i class="fa-solid fa-book-open w-4 text-center"></i> Accounting</a></li>
+                <li><a id="nav-journal"><i class="fa-solid fa-pen-nib w-4 text-center"></i> Journal Entries</a></li>
+                <li><a id="nav-ledger"><i class="fa-solid fa-book w-4 text-center"></i> General Ledger</a></li>
+                <li><a id="nav-balancesheet"><i class="fa-solid fa-scale-unbalanced w-4 text-center"></i> Balance Sheet</a></li>
                 <li><a id="nav-gst"><i class="fa-solid fa-scale-balanced w-4 text-center"></i> GST Compliance</a></li>
 
                 <li class="menu-title text-xs uppercase tracking-wider opacity-50 mt-2" id="cat-util">Utilities</li>
@@ -144,11 +139,24 @@
                 </div>
                 <div class="flex-none gap-2">
                     <div id="header-alert" class="badge badge-error gap-2 hidden">
-                        <i class="fa-solid fa-triangle-exclamation"></i> Low Stock
+                        <i class="fa-solid fa-triangle-exclamation"></i> Action Required
+                    </div>
+                    
+                    <!-- Accessibility Dropdown -->
+                    <div class="dropdown dropdown-end">
+                        <div tabindex="0" role="button" class="btn btn-ghost btn-circle" aria-label="Accessibility Options" title="Accessibility">
+                            <i class="fa-solid fa-universal-access text-lg text-slate-500"></i>
+                        </div>
+                        <ul tabindex="0" class="dropdown-content z-[60] menu p-4 shadow-2xl bg-base-100 rounded-box w-64 text-sm border border-base-300 gap-2">
+                            <li class="menu-title px-0 pb-2">Accessibility Options</li>
+                            <li><button id="btn-acc-normal" class="btn btn-sm btn-ghost justify-start"><i class="fa-solid fa-font w-4"></i> Standard Text</button></li>
+                            <li><button id="btn-acc-large" class="btn btn-sm btn-ghost justify-start"><i class="fa-solid fa-magnifying-glass-plus w-4"></i> Large Text</button></li>
+                            <li><button id="btn-acc-contrast" class="btn btn-sm btn-ghost justify-start"><i class="fa-solid fa-circle-half-stroke w-4"></i> High Contrast Filter</button></li>
+                        </ul>
                     </div>
                     
                     <!-- Theme Toggle -->
-                    <label class="swap swap-rotate btn btn-ghost btn-circle">
+                    <label class="swap swap-rotate btn btn-ghost btn-circle" title="Toggle Dark Mode">
                         <input type="checkbox" id="theme-toggle-checkbox" />
                         <i class="swap-on fill-current fa-solid fa-sun text-lg text-sky-500"></i>
                         <i class="swap-off fill-current fa-solid fa-moon text-lg text-slate-500"></i>
@@ -156,13 +164,13 @@
 
                     <!-- Notifications Dropdown -->
                     <div class="dropdown dropdown-end">
-                        <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+                        <div tabindex="0" role="button" class="btn btn-ghost btn-circle" title="Notifications">
                             <div class="indicator">
                                 <i class="fa-regular fa-bell text-lg"></i>
                                 <span id="notif-badge" class="badge badge-xs badge-error indicator-item hidden"></span>
                             </div>
                         </div>
-                        <ul tabindex="0" id="notif-list" class="dropdown-content z-[60] menu p-4 shadow-2xl bg-base-100 rounded-box w-72 text-sm border border-base-300">
+                        <ul tabindex="0" id="notif-list" class="dropdown-content z-[60] menu p-4 shadow-2xl bg-base-100 rounded-box w-72 text-sm border border-base-300 max-h-96 overflow-y-auto">
                             <li id="notif-title" class="menu-title px-0 pb-2">Notifications</li>
                             <li id="notif-empty"><a class="text-base-content/50 italic">No new notifications</a></li>
                         </ul>
@@ -251,6 +259,7 @@
                                         <option value="Quotation">Quotation</option>
                                         <option value="Proforma">Proforma Invoice</option>
                                         <option value="Credit Note">Credit Note</option>
+                                        <option value="Delivery Note">Delivery Note</option>
                                     </select>
                                 </div>
                                 <div class="form-control w-full">
@@ -265,8 +274,8 @@
 
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div class="form-control w-full">
-                                    <label class="label"><span class="label-text font-bold" id="lbl-customer">Customer Name</span></label>
-                                    <input type="text" id="sales-cust" list="customer-list" class="input input-bordered w-full text-base-content" placeholder="Select or Type...">
+                                    <label class="label"><span class="label-text font-bold" id="lbl-customer">Company Name</span></label>
+                                    <input type="text" id="sales-cust" list="customer-list" class="input input-bordered w-full text-base-content" placeholder="Select or Type new name...">
                                     <datalist id="customer-list"></datalist>
                                 </div>
                                 <div class="form-control w-full">
@@ -275,7 +284,7 @@
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-4 gap-4 mb-6">
+                            <div class="grid grid-cols-5 gap-4 mb-6">
                                 <div class="form-control w-full">
                                     <label class="label"><span class="label-text font-bold">Qty</span></label>
                                     <input type="number" id="sales-qty" class="input input-bordered w-full text-base-content" value="1">
@@ -293,6 +302,13 @@
                                         <option value="0">0%</option>
                                     </select>
                                 </div>
+                                <div class="form-control w-full" id="field-gst-type">
+                                    <label class="label"><span class="label-text font-bold text-xs truncate">GST Type</span></label>
+                                    <select id="sales-gst-type" class="select select-bordered w-full text-base-content text-xs">
+                                        <option value="Intra-State">Intra (CGST+SGST)</option>
+                                        <option value="Inter-State">Inter (IGST)</option>
+                                    </select>
+                                </div>
                                 <div class="form-control w-full" id="field-status">
                                     <label class="label"><span class="label-text font-bold">Payment</span></label>
                                     <select id="sales-status" class="select select-bordered w-full text-base-content">
@@ -308,39 +324,114 @@
                     </div>
                 </div>
 
-                <!-- C. PURCHASE MODULE -->
+                <!-- C. DELIVERY NOTES -->
+                <div id="view-delivery" class="view-section">
+                    <div class="card bg-base-100 shadow-xl p-6 h-[700px] flex flex-col">
+                        <div class="flex justify-between mb-4 text-base-content items-center">
+                            <h2 class="card-title font-bold">Delivery Notes Log</h2>
+                        </div>
+                        <div class="overflow-auto flex-1 border border-base-200 rounded-xl">
+                            <table class="table table-zebra w-full text-base-content">
+                                <thead class="sticky top-0 bg-base-300"><tr><th>Date</th><th>Receiver</th><th>Item Details</th><th>Qty</th><th>Action</th></tr></thead>
+                                <tbody id="delivery-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- D. PURCHASE MODULE -->
                 <div id="view-purchase" class="view-section">
                     <div class="card bg-base-100 shadow-xl max-w-4xl mx-auto border-l-4 border-violet-500">
                         <div class="card-body">
                             <h2 class="card-title text-base-content font-bold">Purchase Entry</h2>
                             <div class="grid grid-cols-2 gap-4">
-                                <input type="text" id="purch-vendor" list="vendor-list" placeholder="Supplier" class="input input-bordered w-full text-base-content" />
-                                <datalist id="vendor-list"></datalist>
-                                
-                                <input type="text" id="purch-item" placeholder="Item" class="input input-bordered w-full text-base-content" />
-                                <input type="number" id="purch-qty" placeholder="Qty" class="input input-bordered w-full text-base-content" value="1" />
-                                <input type="number" id="purch-cost" placeholder="Cost" class="input input-bordered w-full text-base-content" />
-                                <select id="purch-type" class="select select-bordered text-base-content"><option value="Purchase">Purchase</option></select>
-                                <select id="purch-cat" class="select select-bordered text-base-content"><option value="General">General</option></select>
-                                <select id="purch-status" class="select select-bordered text-base-content"><option value="Paid">Paid</option><option value="Unpaid">Unpaid</option></select>
+                                <div class="form-control">
+                                    <label class="label"><span class="label-text font-bold">Supplier Name</span></label>
+                                    <input type="text" id="purch-vendor" list="vendor-list" placeholder="Select or Type new..." class="input input-bordered w-full text-base-content" />
+                                    <datalist id="vendor-list"></datalist>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label"><span class="label-text font-bold">Item Received</span></label>
+                                    <input type="text" id="purch-item" placeholder="Product details" class="input input-bordered w-full text-base-content" />
+                                </div>
+                                <input type="number" id="purch-qty" placeholder="Qty" class="input input-bordered w-full text-base-content mt-2" value="1" />
+                                <input type="number" id="purch-cost" placeholder="Cost per unit (₹)" class="input input-bordered w-full text-base-content mt-2" />
+                                <select id="purch-type" class="select select-bordered text-base-content"><option value="Purchase">Purchase Bill</option></select>
+                                <select id="purch-cat" class="select select-bordered text-base-content"><option value="General">General Category</option></select>
+                                <select id="purch-status" class="select select-bordered text-base-content col-span-2"><option value="Paid">Paid in Full</option><option value="Unpaid">Unpaid / Credit</option></select>
                             </div>
                             <button id="btn-save-purchase" class="btn bg-violet-500 hover:bg-violet-600 border-none mt-4 text-white shadow-lg shadow-violet-500/30">Record Purchase</button>
                         </div>
                     </div>
                 </div>
 
-                <div id="view-inventory" class="view-section">
-                    <div class="card bg-base-100 shadow-xl h-[700px]">
-                        <div class="card-body p-0">
-                            <div class="p-6 border-b border-base-300 flex justify-between items-center text-base-content">
-                                <h3 class="card-title">Stock Summary</h3>
-                                <button id="btn-export-csv" class="btn btn-sm btn-outline">Export CSV</button>
+                <!-- NEW: COMPANY PROFILES SEARCH HUB -->
+                <div id="view-profiles" class="view-section">
+                    <div class="card bg-base-100 shadow-xl p-6 h-[700px] flex flex-col">
+                        <div class="flex flex-wrap justify-between mb-4 text-base-content items-end gap-4">
+                            <h2 class="card-title font-bold w-full md:w-auto"><i class="fa-solid fa-building text-sky-500"></i> Company Profiles & History</h2>
+                            <div class="flex gap-2 flex-wrap items-center bg-base-200 p-2 rounded-xl border border-base-300">
+                                <input type="text" id="prof-search" list="prof-customer-list" placeholder="Search Company..." class="input input-bordered input-sm w-48 font-bold text-sky-600">
+                                <datalist id="prof-customer-list"></datalist>
+                                <select id="prof-year" class="select select-bordered select-sm">
+                                    <option value="All">All Years</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2026">2026</option>
+                                </select>
+                                <select id="prof-type" class="select select-bordered select-sm">
+                                    <option value="All">All Docs</option>
+                                    <option value="Sale">Sales / Invoices</option>
+                                    <option value="Purchase">Purchases / Bills</option>
+                                </select>
+                                <button id="btn-load-prof" class="btn bg-sky-500 text-white btn-sm border-none shadow">Load Data</button>
                             </div>
-                            <div class="overflow-auto"><table class="table table-zebra w-full text-base-content"><thead class="sticky top-0 bg-base-100"><tr><th>Item</th><th>Category</th><th class="text-right">Qty</th><th class="text-right">Avg Cost</th><th class="text-right">Value</th><th class="text-center">Status</th></tr></thead><tbody id="inventory-body"></tbody></table></div>
+                        </div>
+                        
+                        <!-- Stats Row -->
+                        <div class="grid grid-cols-3 gap-4 mb-4">
+                            <div class="bg-base-200 p-4 rounded-xl text-center border border-base-300">
+                                <div class="text-xs opacity-70 uppercase font-bold tracking-wide">Total Billed to Them</div>
+                                <div class="text-2xl font-bold text-sky-500" id="prof-stat-billed">₹ 0.00</div>
+                            </div>
+                            <div class="bg-base-200 p-4 rounded-xl text-center border border-base-300">
+                                <div class="text-xs opacity-70 uppercase font-bold tracking-wide">Total Billed by Them</div>
+                                <div class="text-2xl font-bold text-violet-500" id="prof-stat-purch">₹ 0.00</div>
+                            </div>
+                            <div class="bg-base-200 p-4 rounded-xl text-center border border-base-300 relative overflow-hidden">
+                                <div class="text-xs opacity-70 uppercase font-bold tracking-wide">Net Outstanding</div>
+                                <div class="text-2xl font-bold text-warning" id="prof-stat-out">₹ 0.00</div>
+                                <div class="absolute bottom-0 left-0 w-full h-1 bg-warning/30"></div>
+                            </div>
+                        </div>
+
+                        <div class="overflow-auto flex-1 border rounded-xl border-base-300">
+                            <table class="table table-zebra w-full text-base-content">
+                                <thead class="sticky top-0 bg-base-300 text-base-content shadow-sm">
+                                    <tr><th>Date</th><th>Type</th><th>Ref/Doc</th><th>Item</th><th class="text-right">Amount</th><th class="text-center">Status</th></tr>
+                                </thead>
+                                <tbody id="prof-body">
+                                    <tr><td colspan="6" class="text-center opacity-40 py-10 font-bold italic">Search a company to view their complete ledger history</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
 
+                <!-- E. INVENTORY MODULE -->
+                <div id="view-inventory" class="view-section">
+                    <div class="card bg-base-100 shadow-xl h-[700px]">
+                        <div class="card-body p-0">
+                            <div class="p-6 border-b border-base-300 flex justify-between items-center text-base-content">
+                                <h3 class="card-title font-bold">Stock Summary</h3>
+                                <button id="btn-export-csv" class="btn btn-sm btn-outline"><i class="fa-solid fa-download"></i> Export CSV</button>
+                            </div>
+                            <div class="overflow-auto"><table class="table table-zebra w-full text-base-content"><thead class="sticky top-0 bg-base-300"><tr><th>Item</th><th>Category</th><th class="text-right">Qty</th><th class="text-right">Avg Cost</th><th class="text-right">Total Value</th><th class="text-center">Status</th></tr></thead><tbody id="inventory-body"></tbody></table></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- F. ACCOUNTING / BALANCE SHEET / JOURNAL -->
                 <div id="view-accounting" class="view-section">
                     <div class="card bg-base-100 shadow-xl p-6">
                         <h2 class="card-title mb-4 text-base-content font-bold">Accounting Overview</h2>
@@ -358,58 +449,114 @@
                 <div id="view-ledger" class="view-section">
                     <div class="card bg-base-100 shadow-xl p-6 h-[700px] flex flex-col">
                         <div class="flex justify-between mb-4 text-base-content items-center">
-                            <h2 class="card-title font-bold">Ledger</h2>
+                            <h2 class="card-title font-bold">General Ledger</h2>
                             <div class="join"><input type="text" id="search-bar" class="input input-bordered join-item input-sm text-base-content" placeholder="Search..." /><button id="btn-clear" class="btn btn-sm join-item">Reset</button></div>
                         </div>
-                        <div class="overflow-auto flex-1"><table class="table table-zebra w-full text-base-content"><thead class="sticky top-0 bg-base-100"><tr><th>Date</th><th>Party (Doc)</th><th class="text-right">Amount</th><th class="text-center">Status</th><th class="text-center">Action</th></tr></thead><tbody id="ledger-body"></tbody></table></div>
+                        <div class="overflow-auto flex-1 border border-base-200 rounded-xl"><table class="table table-zebra w-full text-base-content"><thead class="sticky top-0 bg-base-300"><tr><th>Date</th><th>Party (Doc)</th><th class="text-right">Amount</th><th class="text-center">Status</th><th class="text-center">Action</th></tr></thead><tbody id="ledger-body"></tbody></table></div>
                     </div>
                 </div>
 
+                <div id="view-journal" class="view-section">
+                    <div class="card bg-base-100 shadow-xl p-6 h-[700px] flex flex-col">
+                        <h2 class="card-title font-bold text-base-content mb-4">Journal Entries</h2>
+                        <div class="grid grid-cols-5 gap-3 mb-6 bg-base-200 p-6 rounded-xl border border-base-300 shadow-inner">
+                            <input type="date" id="j-date" class="input input-bordered input-sm w-full">
+                            <input type="text" id="j-debit" placeholder="Debit A/C" class="input input-bordered input-sm w-full font-bold text-sky-600">
+                            <input type="text" id="j-credit" placeholder="Credit A/C" class="input input-bordered input-sm w-full font-bold text-violet-600">
+                            <input type="number" id="j-amt" placeholder="Amount (₹)" class="input input-bordered input-sm w-full">
+                            <button id="btn-save-journal" class="btn btn-sm bg-slate-800 text-white hover:bg-slate-700 border-none shadow">Add Entry</button>
+                            <input type="text" id="j-desc" placeholder="Narration / Description of the entry..." class="input input-bordered input-sm w-full col-span-5">
+                        </div>
+                        <div class="overflow-auto flex-1 border border-base-200 rounded-xl">
+                            <table class="table table-zebra w-full text-base-content">
+                                <thead class="sticky top-0 bg-base-300"><tr><th>Date</th><th>Debit A/C</th><th>Credit A/C</th><th class="text-right">Amount</th><th>Narration</th></tr></thead>
+                                <tbody id="journal-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-balancesheet" class="view-section">
+                    <div class="card bg-base-100 shadow-xl p-8 h-[700px] flex flex-col">
+                        <div class="flex justify-between items-center mb-8 border-b border-base-300 pb-4">
+                            <h2 class="card-title font-bold text-base-content text-2xl"><i class="fa-solid fa-scale-unbalanced text-sky-500"></i> Balance Sheet</h2>
+                            <select id="bs-period" class="select select-bordered font-bold text-sky-600">
+                                <option value="monthly">Monthly Overview</option>
+                                <option value="quarterly">Quarterly Overview</option>
+                                <option value="half">Half Yearly Overview</option>
+                                <option value="annual">Annual Overview</option>
+                                <option value="all" selected>All Time (Net)</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-12 flex-1">
+                            <!-- Assets -->
+                            <div class="bg-sky-50/50 dark:bg-sky-900/10 p-6 rounded-2xl border border-sky-100 dark:border-sky-900/30">
+                                <h3 class="font-bold text-xl border-b border-sky-200 dark:border-sky-800 pb-3 mb-6 text-sky-600 uppercase tracking-widest">Assets</h3>
+                                <div class="flex justify-between mb-4 text-base-content font-medium"><span>Cash & Bank Balance</span><span id="bs-cash">₹ 0.00</span></div>
+                                <div class="flex justify-between mb-4 text-base-content font-medium"><span>Accounts Receivable</span><span id="bs-rec">₹ 0.00</span></div>
+                                <div class="flex justify-between mb-4 text-base-content font-medium"><span>Inventory Valuation</span><span id="bs-inv">₹ 0.00</span></div>
+                                <div class="flex justify-between font-bold border-t border-sky-200 dark:border-sky-800 pt-4 mt-6 text-xl"><span class="text-base-content">Total Assets</span><span id="bs-total-assets" class="text-sky-600">₹ 0.00</span></div>
+                            </div>
+                            <!-- Liabilities & Equity -->
+                            <div class="bg-violet-50/50 dark:bg-violet-900/10 p-6 rounded-2xl border border-violet-100 dark:border-violet-900/30">
+                                <h3 class="font-bold text-xl border-b border-violet-200 dark:border-violet-800 pb-3 mb-6 text-violet-600 uppercase tracking-widest">Liabilities & Equity</h3>
+                                <div class="flex justify-between mb-4 text-base-content font-medium"><span>Accounts Payable</span><span id="bs-pay">₹ 0.00</span></div>
+                                <div class="flex justify-between mb-4 text-base-content font-medium"><span>Retained Earnings (Net)</span><span id="bs-equity">₹ 0.00</span></div>
+                                <div class="flex justify-between font-bold border-t border-violet-200 dark:border-violet-800 pt-4 mt-16 text-xl"><span class="text-base-content">Total L & E</span><span id="bs-total-liab" class="text-violet-600">₹ 0.00</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- G. LEADS MODULE -->
                 <div id="view-leads" class="view-section">
                     <div class="card bg-base-100 shadow-xl p-6 h-[700px] flex flex-col">
                         <div class="flex justify-between mb-4 text-base-content items-center">
-                            <h2 class="card-title font-bold">Leads</h2>
+                            <h2 class="card-title font-bold">Leads (CRM)</h2>
                             <button id="btn-open-lead-panel" class="btn bg-sky-500 hover:bg-sky-600 text-white border-none btn-sm">Add Lead</button>
                         </div>
-                        <div class="overflow-auto flex-1">
-                            <table class="table table-zebra w-full text-base-content"><thead class="sticky top-0 bg-base-100"><tr><th>Name</th><th>Source</th><th>Status</th></tr></thead><tbody id="leads-body"></tbody></table>
+                        <div class="overflow-auto flex-1 border border-base-200 rounded-xl">
+                            <table class="table table-zebra w-full text-base-content"><thead class="sticky top-0 bg-base-300"><tr><th>Date</th><th>Name</th><th>Source</th><th>Status</th></tr></thead><tbody id="leads-body"></tbody></table>
                         </div>
                     </div>
                 </div>
 
                 <div id="view-receivables" class="view-section">
                     <div class="card bg-base-100 shadow-xl p-6 h-[700px] flex flex-col">
-                        <h2 class="card-title mb-4 text-base-content font-bold">Receivables</h2>
-                        <div class="overflow-auto flex-1">
-                            <table class="table w-full text-base-content"><thead class="sticky top-0 bg-base-100"><tr><th>Date</th><th>Customer</th><th class="text-right">Amount</th></tr></thead><tbody id="receivables-body"></tbody></table>
+                        <h2 class="card-title mb-4 text-base-content font-bold">Receivables (Outstanding)</h2>
+                        <div class="overflow-auto flex-1 border border-base-200 rounded-xl">
+                            <table class="table table-zebra w-full text-base-content"><thead class="sticky top-0 bg-base-300"><tr><th>Date</th><th>Customer</th><th class="text-right">Amount</th><th class="text-center">Notify</th></tr></thead><tbody id="receivables-body"></tbody></table>
                         </div>
                     </div>
                 </div>
 
                 <div id="view-payables" class="view-section">
                     <div class="card bg-base-100 shadow-xl p-6 h-[700px] flex flex-col">
-                        <h2 class="card-title mb-4 text-base-content font-bold">Payables</h2>
-                        <div class="overflow-auto flex-1">
-                            <table class="table w-full text-base-content"><thead class="sticky top-0 bg-base-100"><tr><th>Date</th><th>Supplier</th><th class="text-right">Amount</th></tr></thead><tbody id="payables-body"></tbody></table>
+                        <h2 class="card-title mb-4 text-base-content font-bold">Payables (Outstanding)</h2>
+                        <div class="overflow-auto flex-1 border border-base-200 rounded-xl">
+                            <table class="table table-zebra w-full text-base-content"><thead class="sticky top-0 bg-base-300"><tr><th>Date</th><th>Supplier</th><th class="text-right">Amount</th><th class="text-center">Notify</th></tr></thead><tbody id="payables-body"></tbody></table>
                         </div>
                     </div>
                 </div>
 
                 <div id="view-utils" class="view-section">
                     <div class="grid grid-cols-3 gap-6 text-base-content">
-                        <div class="card bg-base-100 shadow-xl p-6 text-center">
-                            <div class="flex justify-center mb-2 text-sky-500 text-3xl"><i class="fa-solid fa-cloud-arrow-down"></i></div>
-                            <button id="btn-backup" class="btn bg-sky-500 hover:bg-sky-600 text-white border-none btn-sm">Download Backup</button>
+                        <div class="card bg-base-100 shadow-xl p-6 text-center hover:shadow-2xl transition cursor-pointer">
+                            <div class="flex justify-center mb-4 text-sky-500 text-4xl"><i class="fa-solid fa-cloud-arrow-down"></i></div>
+                            <h3 class="font-bold mb-2">Export Data</h3>
+                            <button id="btn-backup" class="btn bg-sky-500 hover:bg-sky-600 text-white border-none w-full shadow-lg shadow-sky-500/30">Download JSON</button>
                         </div>
-                        <div class="card bg-base-100 shadow-xl p-6 text-center">
-                            <div class="flex justify-center mb-2 text-success text-3xl"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                        <div class="card bg-base-100 shadow-xl p-6 text-center hover:shadow-2xl transition cursor-pointer">
+                            <div class="flex justify-center mb-4 text-success text-4xl"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                            <h3 class="font-bold mb-2">Import Data</h3>
                             <input type="file" id="upload-json" class="hidden" accept=".json,.vyb" />
-                            <label for="upload-json" class="btn btn-success btn-sm text-white border-none w-full cursor-pointer">Restore Data</label>
-                            <button id="btn-process-restore" class="hidden">Hidden Process</button>
+                            <label for="upload-json" class="btn bg-success hover:bg-green-600 text-white border-none w-full cursor-pointer shadow-lg shadow-success/30">Restore Backup</label>
+                            <button id="btn-process-restore" class="hidden">Hidden</button>
                         </div>
-                        <div class="card bg-base-100 shadow-xl p-6 text-center">
-                            <div class="flex justify-center mb-2 text-violet-500 text-3xl"><i class="fa-solid fa-users"></i></div>
-                            <button id="btn-user-roles" class="btn bg-violet-500 hover:bg-violet-600 text-white border-none btn-sm">Roles & Users</button>
+                        <div class="card bg-base-100 shadow-xl p-6 text-center hover:shadow-2xl transition cursor-pointer">
+                            <div class="flex justify-center mb-4 text-violet-500 text-4xl"><i class="fa-solid fa-users-gear"></i></div>
+                            <h3 class="font-bold mb-2">System Access</h3>
+                            <button id="btn-user-roles" class="btn bg-violet-500 hover:bg-violet-600 text-white border-none w-full shadow-lg shadow-violet-500/30">Roles & Users</button>
                         </div>
                     </div>
                 </div>
@@ -417,10 +564,10 @@
                 <div id="view-gst" class="view-section">
                     <div class="card bg-base-100 shadow-xl p-6 text-base-content">
                         <h2 class="card-title mb-4 font-bold">GST Compliance</h2>
-                        <div class="bg-base-200 p-6 rounded-lg font-mono text-sm leading-relaxed">
-                            <div class="flex justify-between border-b border-base-300 pb-2 mb-2"><span>GSTR-1 Total Sales:</span> <span class="font-bold">₹ 0.00</span></div>
-                            <div class="flex justify-between border-b border-base-300 pb-2 mb-2"><span>GSTR-2 Total Purchases:</span> <span class="font-bold">₹ 0.00</span></div>
-                            <div class="flex justify-between text-success"><span>Estimated ITC:</span> <span class="font-bold">₹ 0.00</span></div>
+                        <div class="bg-base-200 p-6 rounded-xl font-mono text-sm leading-relaxed border border-base-300">
+                            <div class="flex justify-between border-b border-base-300 pb-3 mb-3"><span>GSTR-1 Total Sales (Outward):</span> <span class="font-bold text-sky-600 text-lg">₹ 0.00</span></div>
+                            <div class="flex justify-between border-b border-base-300 pb-3 mb-3"><span>GSTR-2 Total Purchases (Inward):</span> <span class="font-bold text-violet-600 text-lg">₹ 0.00</span></div>
+                            <div class="flex justify-between text-success mt-4 bg-success/10 p-3 rounded-lg"><span class="font-bold">Net Estimated ITC (Input Tax Credit):</span> <span class="font-bold text-lg">₹ 0.00</span></div>
                         </div>
                     </div>
                 </div>
@@ -431,28 +578,48 @@
 
     <!-- Login Screen -->
     <div id="login-screen" class="fixed inset-0 z-[60] bg-base-200 flex items-center justify-center p-4 transition-all duration-500">
-        <div class="card w-96 bg-base-100 shadow-xl">
+        <div class="card w-96 bg-base-100 shadow-2xl border border-base-300">
             <div class="card-body items-center text-center">
-                <div class="w-32 h-32 mb-2 flex items-center justify-center">
+                <div class="w-32 h-32 mb-4 flex items-center justify-center">
                     <svg class="app-logo-svg drop-shadow-xl" viewBox="200 250 180 230" xmlns="http://www.w3.org/2000/svg">
                         <path class="cls-2" d="M355.17,356.98c0,33.76-27.37,61.13-61.13,61.13-7.42,0-14.54-1.32-21.12-3.75v-57.38c0-11.65,9.47-21.13,21.12-21.13s21.13,9.48,21.13,21.13-9.48,21.13-21.13,21.13c-4.53,0-8.73-1.43-12.17-3.88v22.04c3.85,1.2,7.93,1.84,12.17,1.84,22.68,0,41.13-18.45,41.13-41.13s-18.45-41.13-41.13-41.13-41.12,18.45-41.12,41.13v45.23c-12.29-11.18-20.01-27.3-20.01-45.23,0-33.76,27.37-61.13,61.13-61.13s61.13,27.37,61.13,61.13Z"/>
                         <path class="cls-1" d="M335.17,356.98c0,22.68-18.45,41.13-41.13,41.13-4.24,0-8.32-.64-12.17-1.84v-22.04c3.44,2.45,7.64,3.88,12.17,3.88,11.65,0,21.13-9.48,21.13-21.13s-9.48-21.13-21.13-21.13-21.12,9.48-21.12,21.13v57.38c-7.46-2.74-14.23-6.9-20-12.15v-45.23c0-22.68,18.44-41.13,41.12-41.13s41.13,18.45,41.13,41.13Z"/>
                         <polyline class="cls-2" points="272.92 414.36 272.92 446.45 252.92 446.45 252.92 402.21"/>
                     </svg>
                 </div>
-                <h2 class="card-title text-2xl text-base-content font-bold">Login to Printos</h2>
-                <div class="form-control w-full gap-2 mt-4">
-                    <input type="text" id="login-user" placeholder="User ID" class="input input-bordered text-base-content" />
-                    <input type="password" id="login-pass" placeholder="Password" class="input input-bordered text-base-content" />
+                <h2 class="card-title text-2xl text-base-content font-bold mb-2 tracking-tight">Login to Printos</h2>
+                <div class="form-control w-full gap-3 mt-4">
+                    <input type="text" id="login-user" placeholder="User ID" class="input input-bordered text-base-content shadow-inner" />
+                    <input type="password" id="login-pass" placeholder="Password" class="input input-bordered text-base-content shadow-inner" />
                 </div>
-                <button id="btn-login" class="btn bg-sky-500 hover:bg-sky-600 text-white border-none w-full mt-4 font-bold">Secure Login</button>
+                <button id="btn-login" class="btn bg-sky-500 hover:bg-sky-600 text-white border-none w-full mt-6 font-bold shadow-lg shadow-sky-500/30">Secure Login</button>
                 <p id="login-msg" class="text-error text-sm mt-2 font-bold"></p>
-                <div class="text-xs opacity-50 mt-4">Admin: admin / admin<br>Staff: User / User</div>
+                <div class="text-xs opacity-50 mt-4 bg-base-200 p-2 rounded">Admin: admin / admin<br>Staff: User / User</div>
             </div>
         </div>
     </div>
 
     <!-- Modals -->
+    <!-- NEW CLIENT CAPTURE MODAL -->
+    <dialog id="new_client_modal" class="modal">
+        <div class="modal-box bg-base-100 text-base-content rounded-3xl border border-sky-500/30 shadow-2xl">
+            <h3 class="font-bold text-xl mb-2 text-sky-600"><i class="fa-solid fa-address-book"></i> New Contact Detected!</h3>
+            <p class="py-2 opacity-80">It looks like <span id="new-client-name-display" class="font-bold text-base-content"></span> is a new entry. Let's add their contact info to enable WhatsApp reminders later.</p>
+            <div class="form-control mb-3 mt-4">
+                <label class="label"><span class="label-text font-bold uppercase text-xs opacity-70">WhatsApp / Mobile</span></label>
+                <input type="text" id="new-client-phone" class="input input-bordered font-mono" placeholder="e.g. +919876543210">
+            </div>
+            <div class="form-control mb-6">
+                <label class="label"><span class="label-text font-bold uppercase text-xs opacity-70">Email Address</span></label>
+                <input type="email" id="new-client-email" class="input input-bordered" placeholder="mail@example.com">
+            </div>
+            <div class="modal-action">
+                <button id="btn-skip-new-client" class="btn btn-ghost">Skip</button>
+                <button id="btn-save-new-client" class="btn bg-sky-500 hover:bg-sky-600 text-white border-none shadow-lg shadow-sky-500/20">Save Info</button>
+            </div>
+        </div>
+    </dialog>
+
     <dialog id="invoice_modal" class="modal">
         <div class="modal-box w-11/12 max-w-3xl bg-base-100 text-base-content rounded-3xl">
             <form method="dialog">
@@ -470,12 +637,12 @@
                             </svg>
                         </div>
                         <div>
-                            <h1 class="text-3xl font-bold text-sky-500">Printos</h1>
+                            <h1 class="text-3xl font-bold text-sky-500 mb-1">Printos</h1>
                             <p class="text-xs opacity-60 uppercase font-bold tracking-widest">Digital Solutions</p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <h2 class="text-2xl font-bold uppercase tracking-tight" id="doc-title">INVOICE</h2>
+                        <h2 class="text-2xl font-bold uppercase tracking-tight text-base-content" id="doc-title">INVOICE</h2>
                         <p id="inv-num" class="font-mono text-sm font-bold opacity-70">--</p>
                         <p id="inv-date" class="text-xs opacity-50 mt-1">--</p>
                     </div>
@@ -486,24 +653,28 @@
                     <p id="inv-project" class="text-sm opacity-60 mt-1">Project: --</p>
                 </div>
                 <table class="table table-sm w-full mb-6">
-                    <thead class="bg-base-200">
+                    <thead class="bg-base-200 text-base-content">
                         <tr>
                             <th>Description</th>
                             <th class="text-right">Qty</th>
+                            <th class="text-right">Price</th>
                             <th class="text-right">Total</th>
                         </tr>
                     </thead>
                     <tbody id="inv-items"></tbody>
                 </table>
-                <div class="flex justify-end pt-4 border-t border-base-200">
-                    <div class="text-right">
-                        <p class="text-sm opacity-60">Amount Due</p>
-                        <h2 class="text-3xl font-bold text-sky-500">₹ <span id="inv-total">0.00</span></h2>
+                <div class="flex justify-end pt-4 border-t border-base-200 mt-4">
+                    <div class="w-64 space-y-2 text-right">
+                        <div class="flex justify-between text-sm opacity-70 font-mono"><span>Subtotal</span> <span>₹ <span id="inv-sub">0.00</span></span></div>
+                        <div id="tax-cgst-row" class="flex justify-between text-sm opacity-70 font-mono"><span>CGST</span> <span>₹ <span id="inv-cgst">0.00</span></span></div>
+                        <div id="tax-sgst-row" class="flex justify-between text-sm opacity-70 font-mono"><span>SGST</span> <span>₹ <span id="inv-sgst">0.00</span></span></div>
+                        <div id="tax-igst-row" class="flex justify-between text-sm opacity-70 hidden font-mono"><span>IGST</span> <span>₹ <span id="inv-igst">0.00</span></span></div>
+                        <div class="flex justify-between font-bold text-lg border-t border-base-300 pt-2 mt-2 font-mono"><span>Total</span> <span class="text-sky-500">₹ <span id="inv-total">0.00</span></span></div>
                     </div>
                 </div>
             </div>
             <div class="modal-action gap-2">
-                <button id="btn-wa-invoice" class="btn bg-green-500 hover:bg-green-600 text-white border-none rounded-xl shadow-lg shadow-green-500/20 font-bold"><i class="fa-brands fa-whatsapp text-lg"></i> Share via WhatsApp</button>
+                <button id="btn-wa-invoice" class="btn bg-green-500 hover:bg-green-600 text-white border-none rounded-xl shadow-lg shadow-green-500/20 font-bold"><i class="fa-brands fa-whatsapp text-lg"></i> Send Copy</button>
                 <button id="btn-print-sys" class="btn bg-sky-500 hover:bg-sky-600 text-white border-none px-8 rounded-xl font-bold shadow-lg shadow-sky-500/20">Print PDF</button>
             </div>
         </div>
@@ -512,11 +683,11 @@
     <dialog id="warning_modal" class="modal">
         <div class="modal-box text-center bg-base-100 text-base-content rounded-3xl border border-warning/20 shadow-2xl">
             <div class="flex justify-center mb-4 text-warning text-6xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
-            <h3 class="font-bold text-xl">Credit Limit Warning</h3>
-            <p class="py-4 text-slate-500" id="warning-msg"></p>
+            <h3 class="font-bold text-xl">System Alert</h3>
+            <p class="py-4 text-slate-500 font-medium" id="warning-msg"></p>
             <div class="modal-action justify-center">
                 <form method="dialog">
-                    <button class="btn btn-neutral rounded-xl px-10">I Understand</button>
+                    <button class="btn btn-neutral rounded-xl px-10">Acknowledge</button>
                 </form>
             </div>
         </div>
@@ -608,12 +779,12 @@
                 <textarea id="quick-lead-comments" class="textarea textarea-bordered w-full h-24 text-sm" placeholder="Enter comments here... (Min 10 words)"></textarea>
                 <div class="text-right mt-1"><span id="word-count-msg" class="text-xs font-bold text-error">0/10 words</span></div>
             </div>
-            <label class="cursor-pointer label mt-2 justify-start gap-3 border bg-base-200 p-2 rounded-lg">
+            <label class="cursor-pointer label mt-2 justify-start gap-3 border bg-base-200 p-2 rounded-lg hover:bg-base-300 transition">
                 <input type="checkbox" id="quick-lead-wa-notify" class="checkbox checkbox-success checkbox-sm" />
-                <span class="label-text font-bold text-success"><i class="fa-brands fa-whatsapp text-lg"></i> Notify on WhatsApp</span>
+                <span class="label-text font-bold text-success"><i class="fa-brands fa-whatsapp text-lg"></i> Notify via WhatsApp</span>
             </label>
         </div>
-        <button id="btn-save-quick-lead" class="btn w-full mt-6 text-white font-bold rounded-xl shadow-lg bg-slate-300 cursor-not-allowed border-none shrink-0 transition-all duration-300 font-bold" disabled>Save Lead</button>
+        <button id="btn-save-quick-lead" class="btn w-full mt-6 text-white font-bold rounded-xl shadow-lg bg-slate-300 cursor-not-allowed border-none shrink-0 transition-all duration-300" disabled>Save Lead</button>
     </div>
 
     <!-- FAB -->
@@ -636,10 +807,12 @@
 
         # --- DATA STRUCTURES ---
         ledger = []
+        journal_entries = []
         inventory = {"Paper Rim": {"qty": 150, "cost": 220.0, "category": "Raw Material"}}
         leads = []
-        company_db = set()
+        company_db = {} # Changed to dict to hold contact info
         chart_main = None
+        pending_new_company = ""
         
         # RBAC System
         users = {
@@ -650,7 +823,7 @@
         current_role = None
 
         class Transaction:
-            def __init__(self, t_type, doc_type, ref_no, party, item, qty, price, gst, status):
+            def __init__(self, t_type, doc_type, ref_no, party, item, qty, price, gst, status, gst_type="Intra-State"):
                 self.id = len(ledger) + 1
                 self.ref_no = ref_no
                 self.date = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -661,6 +834,7 @@
                 self.qty = int(qty)
                 self.price = float(price)
                 self.gst_percent = int(gst)
+                self.gst_type = gst_type
                 self.status = status
                 self.base_amt = self.qty * self.price
                 self.tax_amt = (self.base_amt * self.gst_percent) / 100
@@ -671,7 +845,7 @@
                 
             @classmethod
             def from_dict(cls, d):
-                tx = cls(d['type'], d['doc_type'], d.get('ref_no', ''), d['party'], d['item'], d['qty'], d['price'], d['gst_percent'], d['status'])
+                tx = cls(d['type'], d['doc_type'], d.get('ref_no', ''), d['party'], d['item'], d['qty'], d['price'], d['gst_percent'], d['status'], d.get('gst_type', 'Intra-State'))
                 tx.id = d['id']
                 tx.date = d['date']
                 tx.base_amt = d['base_amt']
@@ -679,19 +853,40 @@
                 tx.total = d['total']
                 return tx
 
+        class JournalEntry:
+            def __init__(self, date, debit, credit, amt, desc):
+                self.id = len(journal_entries) + 1
+                self.date = date
+                self.debit = debit
+                self.credit = credit
+                self.amt = float(amt)
+                self.desc = desc
+            def to_dict(self): return self.__dict__
+            @classmethod
+            def from_dict(cls, d):
+                je = cls(d['date'], d['debit'], d['credit'], d['amt'], d['desc'])
+                je.id = d['id']
+                return je
+
         # --- LOCAL STORAGE AUTO-SAVE ---
         def load_state():
-            global ledger, inventory, leads, company_db, users
+            global ledger, inventory, leads, company_db, users, journal_entries
             try:
                 if window.localStorage.getItem("printos_ledger"):
                     ledger_data = json.loads(window.localStorage.getItem("printos_ledger"))
                     ledger = [Transaction.from_dict(d) for d in ledger_data]
+                if window.localStorage.getItem("printos_journal"):
+                    je_data = json.loads(window.localStorage.getItem("printos_journal"))
+                    journal_entries = [JournalEntry.from_dict(d) for d in je_data]
                 if window.localStorage.getItem("printos_inventory"):
                     inventory = json.loads(window.localStorage.getItem("printos_inventory"))
                 if window.localStorage.getItem("printos_leads"):
                     leads = json.loads(window.localStorage.getItem("printos_leads"))
                 if window.localStorage.getItem("printos_company_db"):
-                    company_db = set(json.loads(window.localStorage.getItem("printos_company_db")))
+                    cdb = json.loads(window.localStorage.getItem("printos_company_db"))
+                    # Migration handler (list to dict)
+                    if isinstance(cdb, list): company_db = {c: {"phone": "", "email": ""} for c in cdb}
+                    else: company_db = cdb
                 if window.localStorage.getItem("printos_users"):
                     users = json.loads(window.localStorage.getItem("printos_users"))
             except Exception as e:
@@ -699,25 +894,34 @@
 
         def save_state():
             window.localStorage.setItem("printos_ledger", json.dumps([t.to_dict() for t in ledger]))
+            window.localStorage.setItem("printos_journal", json.dumps([j.to_dict() for j in journal_entries]))
             window.localStorage.setItem("printos_inventory", json.dumps(inventory))
             window.localStorage.setItem("printos_leads", json.dumps(leads))
-            window.localStorage.setItem("printos_company_db", json.dumps(list(company_db)))
+            window.localStorage.setItem("printos_company_db", json.dumps(company_db))
             window.localStorage.setItem("printos_users", json.dumps(users))
 
         # --- HELPERS ---
         def format_short_amt(val):
             abs_val = abs(val)
-            if abs_val >= 10000000:
-                return f"{abs_val/10000000:.2f}Cr"
-            elif abs_val >= 100000:
-                return f"{abs_val/100000:.2f}L"
-            elif abs_val >= 1000:
-                return f"{abs_val/1000:.2f}K"
+            if abs_val >= 10000000: return f"{abs_val/10000000:.2f}Cr"
+            elif abs_val >= 100000: return f"{abs_val/100000:.2f}L"
+            elif abs_val >= 1000: return f"{abs_val/1000:.2f}K"
             return f"{abs_val:.2f}"
+
+        def get_hot_leads():
+            today = datetime.date.today()
+            hot = []
+            for l in leads:
+                try:
+                    ld = datetime.datetime.strptime(l.get("date", "2020-01-01"), "%Y-%m-%d").date()
+                    if (today - ld).days >= 15 and l.get("status") != "Resolved":
+                        hot.append(l)
+                except: pass
+            return hot
 
         # --- RBAC / AUTH HANDLERS ---
         def apply_permissions():
-            navs = ["nav-dashboard", "nav-create", "nav-ledger", "nav-receivables", "nav-leads", "nav-purchase", "nav-payables", "nav-inventory", "nav-accounting", "nav-gst", "nav-utils"]
+            navs = ["nav-dashboard", "nav-create", "nav-delivery", "nav-ledger", "nav-receivables", "nav-leads", "nav-profiles", "nav-purchase", "nav-payables", "nav-inventory", "nav-journal", "nav-balancesheet", "nav-accounting", "nav-gst", "nav-utils"]
             cats = ["cat-main", "cat-sales", "cat-purch", "cat-inv", "cat-util"]
             
             for nav in navs:
@@ -728,7 +932,7 @@
             document["btn-user-roles"].style.display = ""
             
             if current_role == "User":
-                restricted = ["nav-dashboard", "nav-ledger", "nav-receivables", "nav-payables", "nav-inventory", "nav-accounting", "nav-gst", "nav-utils"]
+                restricted = ["nav-dashboard", "nav-ledger", "nav-receivables", "nav-profiles", "nav-payables", "nav-inventory", "nav-journal", "nav-balancesheet", "nav-accounting", "nav-gst", "nav-utils"]
                 rcats = ["cat-main", "cat-inv", "cat-util"]
                 for nav in restricted:
                     if document.getElementById(nav): document[nav].style.display = "none"
@@ -745,6 +949,12 @@
             document["display-role"].text = current_role
             document["display-avatar"].text = current_user[:2].upper()
 
+        def trigger_hot_leads_popup():
+            hot = get_hot_leads()
+            if hot:
+                document["warning-msg"].text = f"You have {len(hot)} HOT lead(s) pending resolution (Older than 15 days). Please review CRM."
+                document["warning_modal"].showModal()
+
         def login_handler(evt):
             global current_user, current_role
             u = document["login-user"].value
@@ -759,14 +969,14 @@
                 window.setTimeout(lambda: document["login-screen"].style.setProperty("display", "none"), 500)
                 apply_permissions()
                 document["login-msg"].text = ""
+                trigger_hot_leads_popup()
             else:
                 document["login-msg"].text = "Invalid User ID or Password"
 
         def logout_handler(evt):
-            today = datetime.date.today()
-            hot = sum(1 for l in leads if (today - datetime.datetime.strptime(l.get("date", "2020-01-01"), "%Y-%m-%d").date()).days >= 15)
-            if hot > 0:
-                window.alert(f"SECURITY ALERT: You cannot logout. You must resolve {hot} HOT leads first!")
+            hot = get_hot_leads()
+            if len(hot) > 0:
+                window.alert(f"SECURITY ALERT: You cannot logout. You must resolve {len(hot)} HOT leads first!")
                 switch_view("view-leads")
             else:
                 window.localStorage.removeItem("session_user")
@@ -777,11 +987,8 @@
                 document["login-pass"].value = ""
                 
         def open_roles_modal(evt):
-            if current_role != "Admin":
-                window.alert("Access Denied.")
-                return
-            render_users_list()
-            document["roles_modal"].showModal()
+            if current_role != "Admin": return window.alert("Access Denied.")
+            render_users_list(); document["roles_modal"].showModal()
             
         def render_users_list():
             tbody = document["users-list-body"]; tbody.clear()
@@ -795,23 +1002,58 @@
             if not uid or not pwd: return
             users[uid] = {"password": pwd, "role": role}
             save_state(); render_users_list(); document["new-user-id"].value = ""; document["new-user-pass"].value = ""
+            document["success-msg"].text = "User Created Successfully!"
             document["success_modal"].showModal()
+
+        # --- CLIENT CAPTURE LOGIC ---
+        def prompt_new_client(name):
+            global pending_new_company
+            pending_new_company = name
+            document["new-client-name-display"].text = name
+            document["new-client-phone"].value = ""
+            document["new-client-email"].value = ""
+            document["new_client_modal"].showModal()
+            
+        def save_new_client_info(evt):
+            global pending_new_company
+            p = document["new-client-phone"].value.strip()
+            e = document["new-client-email"].value.strip()
+            company_db[pending_new_company] = {"phone": p, "email": e}
+            save_state()
+            update_customer_suggestions()
+            try: document.getElementById("new_client_modal").close()
+            except: document["new_client_modal"].removeAttribute("open")
+            
+        def skip_new_client(evt):
+            global pending_new_company
+            company_db[pending_new_company] = {"phone": "", "email": ""}
+            save_state(); update_customer_suggestions()
+            try: document.getElementById("new_client_modal").close()
+            except: document["new_client_modal"].removeAttribute("open")
 
         # --- CORE FORM LOGIC ---
         def save_sales(evt):
             try:
                 ref_no = document["next-inv"].value
-                dtype, cust, item, qty, price, gst, status = [document[i].value for i in ["sales-type", "sales-cust", "sales-item", "sales-qty", "sales-price", "sales-gst", "sales-status"]]
+                dtype, cust, item, qty, price, gst, gst_type, status = [document[i].value for i in ["sales-type", "sales-cust", "sales-item", "sales-qty", "sales-price", "sales-gst", "sales-gst-type", "sales-status"]]
+                if dtype == "Delivery Note": price = "0"; gst = "0"
                 if not item or not price: return window.alert("Fill required fields (Item & Price)")
-                tx = Transaction("Sale", dtype, ref_no, cust, item, qty, price, gst, status)
+                
+                tx = Transaction("Sale", dtype, ref_no, cust, item, qty, price, gst, status, gst_type)
                 ledger.append(tx)
-                if cust: company_db.add(cust)
+                
+                is_new_client = False
+                if cust and cust not in company_db: is_new_client = True
+                
                 save_state(); refresh_all()
-                document["status-msg"].text = "Transaction saved successfully!"
+                document["status-msg"].text = f"{dtype} saved successfully!"
                 document["status-msg"].class_name = "text-center text-sm font-bold mt-2 h-4 text-success"
                 document["sales-item"].value = ""; document["sales-price"].value = ""; document["sales-cust"].value = ""
-                check_credit_limit(cust)
                 window.setTimeout(lambda: document["status-msg"].setAttribute("text", ""), 3000)
+                
+                if is_new_client: prompt_new_client(cust)
+                elif dtype != "Delivery Note": check_credit_limit(cust)
+                
             except Exception as e: window.alert(f"Error: {e}")
 
         def save_purchase(evt):
@@ -819,16 +1061,49 @@
                 vendor, item, qty, cost, status = [document[i].value for i in ["purch-vendor", "purch-item", "purch-qty", "purch-cost", "purch-status"]]
                 tx = Transaction("Purchase", "Bill", f"PUR-{len(ledger)+1:03}", vendor, item, qty, cost, 0, status)
                 ledger.append(tx)
-                if vendor: company_db.add(vendor)
+                
+                is_new_client = False
+                if vendor and vendor not in company_db: is_new_client = True
+                
                 save_state(); refresh_all()
                 document["purch-vendor"].value = ""; document["purch-item"].value = ""; document["purch-cost"].value = ""
-                document["success_modal"].showModal()
+                
+                if is_new_client: prompt_new_client(vendor)
+                else:
+                    document["success-msg"].text = "Purchase Recorded!"
+                    document["success_modal"].showModal()
+            except Exception as e: window.alert(f"Error: {e}")
+            
+        def save_journal(evt):
+            try:
+                d, db, cr, amt, desc = [document[i].value for i in ["j-date", "j-debit", "j-credit", "j-amt", "j-desc"]]
+                if not db or not cr or not amt: return window.alert("Fill required fields.")
+                je = JournalEntry(d, db, cr, amt, desc)
+                journal_entries.append(je)
+                save_state(); render_journal()
+                for i in ["j-debit", "j-credit", "j-amt", "j-desc"]: document[i].value = ""
             except Exception as e: window.alert(f"Error: {e}")
 
         def toggle_theme(evt):
             h = document.select("html")[0]
             t = "dark" if h.getAttribute("data-theme") == "light" else "light"
             h.setAttribute("data-theme", t)
+            
+        def toggle_accessibility(action, evt=None):
+            b = document.select("body")[0]
+            h = document.select("html")[0]
+            
+            if action == "normal":
+                b.classList.remove("text-large-mode")
+            elif action == "large":
+                b.classList.add("text-large-mode")
+            elif action == "contrast":
+                if b.classList.contains("high-contrast-mode"):
+                    b.classList.remove("high-contrast-mode")
+                    h.setAttribute("data-theme", "light")
+                else:
+                    b.classList.add("high-contrast-mode")
+                    h.setAttribute("data-theme", "dark") # Dark works best with filter for contrast
 
         def switch_view(view_id):
             for el in document.select(".view-section"): el.classList.remove("active")
@@ -836,13 +1111,16 @@
             if document.getElementById(view_id): document[view_id].classList.add("active")
             nav_id = view_id.replace("view-", "nav-")
             if document.getElementById(nav_id): document[nav_id].classList.add("active")
-            document["page-title"].text = view_id.replace("view-", "").capitalize()
+            document["page-title"].text = view_id.replace("view-", "").replace("-", " ").capitalize()
+            
+            if view_id == "view-profiles": render_profile()
 
         def refresh_all():
-            render_ledger(); render_inventory(); render_leads(); render_receivables(); render_payables(); update_dash(); update_customer_suggestions()
+            render_ledger(); render_inventory(); render_leads(); render_receivables(); render_payables()
+            render_delivery(); render_journal(); render_balancesheet(); update_dash(); update_customer_suggestions()
 
         def update_dash():
-            s = sum(t.total for t in ledger if t.type == "Sale")
+            s = sum(t.total for t in ledger if t.type == "Sale" and t.doc_type != "Delivery Note")
             p = sum(t.total for t in ledger if t.type == "Purchase")
             rec = sum(t.total for t in ledger if t.type == "Sale" and t.status == "Unpaid")
             pay = sum(t.total for t in ledger if t.type == "Purchase" and t.status == "Unpaid")
@@ -858,34 +1136,151 @@
             
             document["next-inv"].value = f"#DOC-{len(ledger)+1:03}"
             
-            # Notifications
+            # Notifications Array Builder
             nl, empty, badge = document["notif-list"], document["notif-empty"], document["notif-badge"]
             for c in list(nl.children): 
                 if c.id not in ["notif-title", "notif-empty"]: nl.removeChild(c)
-            alerts = sum(1 for _, d in inventory.items() if d["qty"] < 5)
-            if alerts:
+                
+            notifs = []
+            for n, d in inventory.items():
+                if d["qty"] < 5: notifs.append(f"Low Stock: {n}")
+            
+            pend_leads = [l for l in leads if l.get("status") in ["New", "Pending"]]
+            if pend_leads: notifs.append(f"{len(pend_leads)} Pending Lead(s)")
+            
+            hot = get_hot_leads()
+            if hot: notifs.append(f"{len(hot)} HOT Lead(s) - Action Req!")
+
+            if notifs:
                 badge.classList.remove("hidden"); empty.style.display="none"
                 document["header-alert"].classList.remove("hidden")
-                for n, d in inventory.items():
-                    if d["qty"] < 5:
-                        li = html.LI(); li <= html.A(f"Low Stock: {n}", Class="text-error font-bold"); nl <= li
+                for msg in notifs:
+                    li = html.LI(); li <= html.A(msg, Class="text-error font-bold text-xs"); nl <= li
             else:
                 badge.classList.add("hidden"); empty.style.display="block"; document["header-alert"].classList.add("hidden")
+
+            # Update Low Stock UI in dashboard
+            ul = document["low-stock-list"]; ul.clear()
+            stock_alerts = sum(1 for _, d in inventory.items() if d["qty"] < 5)
+            if stock_alerts:
+                for n, d in inventory.items():
+                    if d["qty"] < 5: ul <= html.LI(html.A(f"{n}: Only {d['qty']} left!", Class="text-error font-bold"))
+            else: ul <= html.LI(html.A("Stock Healthy", Class="text-success"))
 
             if chart_main:
                 chart_main.data.datasets[0].data = [s]; chart_main.data.datasets[1].data = [p]; chart_main.update()
 
         def render_ledger():
             tbody = document["ledger-body"]; tbody.clear()
-            for t in reversed(ledger):
+            for t in reversed([x for x in ledger if x.doc_type != "Delivery Note"]):
                 row = html.TR(Class="hover")
                 row <= html.TD(t.date, Class="text-xs opacity-70")
                 det = html.DIV(); det <= html.DIV(t.party, Class="font-bold"); det <= html.DIV(f"{t.doc_type} | {t.ref_no}", Class="text-xs opacity-50")
-                row <= html.TD(det); row <= html.TD(f"₹ {t.total:.2f}", Class="text-right font-bold")
+                row <= html.TD(det); row <= html.TD(f"₹ {t.total:.2f}", Class="text-right font-mono font-bold")
                 status_class = "badge-success" if t.status == "Paid" else "badge-warning"
                 row <= html.TD(html.SPAN(t.status, Class=f"badge {status_class} badge-sm font-bold"), Class="text-center")
                 btn = html.BUTTON(Class="btn btn-ghost btn-xs text-sky-500", id=f"p-{t.id}"); btn.bind("click", show_preview); btn <= html.I(Class="fa-solid fa-eye")
                 row <= html.TD(btn, Class="text-center"); tbody <= row
+                
+        def render_delivery():
+            tbody = document["delivery-body"]; tbody.clear()
+            dn = [x for x in ledger if x.doc_type == "Delivery Note"]
+            if not dn: return (tbody <= html.TR(html.TD("No Delivery Notes", colspan="5", Class="text-center py-10 opacity-30")))
+            for t in reversed(dn):
+                row = html.TR(Class="hover")
+                row <= html.TD(t.date, Class="text-xs opacity-70")
+                row <= html.TD(t.party, Class="font-bold")
+                row <= html.TD(t.item, Class="opacity-80")
+                row <= html.TD(str(t.qty))
+                btn = html.BUTTON(f"View {t.ref_no}", Class="btn btn-ghost btn-xs text-sky-500", id=f"p-{t.id}"); btn.bind("click", show_preview)
+                row <= html.TD(btn); tbody <= row
+                
+        def render_journal():
+            tbody = document["journal-body"]; tbody.clear()
+            for j in reversed(journal_entries):
+                row = html.TR(Class="hover")
+                row <= html.TD(j.date, Class="text-xs opacity-70")
+                row <= html.TD(j.debit, Class="font-bold text-sky-600")
+                row <= html.TD(j.credit, Class="font-bold text-violet-600")
+                row <= html.TD(f"₹ {j.amt:.2f}", Class="text-right font-bold")
+                row <= html.TD(j.desc, Class="text-xs opacity-60")
+                tbody <= row
+                
+        def render_balancesheet(evt=None):
+            period = document["bs-period"].value
+            today = datetime.date.today()
+            
+            valid_ledger = []
+            for t in ledger:
+                try:
+                    td = datetime.datetime.strptime(t.date, "%Y-%m-%d").date()
+                    if period == "monthly" and (today - td).days > 30: continue
+                    if period == "quarterly" and (today - td).days > 90: continue
+                    if period == "half" and (today - td).days > 180: continue
+                    if period == "annual" and (today - td).days > 365: continue
+                    valid_ledger.append(t)
+                except: valid_ledger.append(t)
+                
+            cash_in = sum(t.total for t in valid_ledger if t.type == "Sale" and t.status == "Paid")
+            cash_out = sum(t.total for t in valid_ledger if t.type == "Purchase" and t.status == "Paid")
+            cash_bal = cash_in - cash_out
+            
+            rec = sum(t.total for t in valid_ledger if t.type == "Sale" and t.status == "Unpaid")
+            pay = sum(t.total for t in valid_ledger if t.type == "Purchase" and t.status == "Unpaid")
+            
+            inv_val = sum(d["qty"] * d["cost"] for _, d in inventory.items())
+            
+            assets = cash_bal + rec + inv_val
+            equity = assets - pay 
+            
+            document["bs-cash"].text = f"₹ {cash_bal:,.2f}"
+            document["bs-rec"].text = f"₹ {rec:,.2f}"
+            document["bs-inv"].text = f"₹ {inv_val:,.2f}"
+            document["bs-total-assets"].text = f"₹ {assets:,.2f}"
+            
+            document["bs-pay"].text = f"₹ {pay:,.2f}"
+            document["bs-equity"].text = f"₹ {equity:,.2f}"
+            document["bs-total-liab"].text = f"₹ {(pay + equity):,.2f}"
+
+        # --- NEW COMPANY PROFILES LOGIC ---
+        def render_profile(evt=None):
+            party = document["prof-search"].value
+            year = document["prof-year"].value
+            ttype = document["prof-type"].value
+            
+            tbody = document["prof-body"]; tbody.clear()
+            
+            if not party:
+                return (tbody <= html.TR(html.TD("Select a company to view history.", colspan="6", Class="text-center opacity-40 py-10 font-bold italic")))
+                
+            filtered = []
+            for t in ledger:
+                if t.party.lower() == party.lower():
+                    if year != "All" and not t.date.startswith(year): continue
+                    if ttype != "All" and t.type != ttype: continue
+                    filtered.append(t)
+            
+            total_b = sum(t.total for t in filtered if t.type == "Sale" and t.doc_type != "Delivery Note")
+            total_p = sum(t.total for t in filtered if t.type == "Purchase")
+            out = sum(t.total for t in filtered if t.status == "Unpaid" and t.type == "Sale") - sum(t.total for t in filtered if t.status == "Unpaid" and t.type == "Purchase")
+            
+            document["prof-stat-billed"].text = f"₹ {format_short_amt(total_b)}"
+            document["prof-stat-purch"].text = f"₹ {format_short_amt(total_p)}"
+            document["prof-stat-out"].text = f"₹ {format_short_amt(out)}"
+            
+            if not filtered:
+                return (tbody <= html.TR(html.TD("No records found for these filters.", colspan="6", Class="text-center opacity-40 py-10 font-bold italic")))
+                
+            for t in reversed(filtered):
+                row = html.TR(Class="hover")
+                row <= html.TD(t.date, Class="text-xs opacity-70")
+                row <= html.TD(html.SPAN(t.type, Class="badge badge-outline badge-sm"))
+                row <= html.TD(f"{t.doc_type} {t.ref_no}", Class="font-bold")
+                row <= html.TD(t.item, Class="opacity-80")
+                row <= html.TD(f"₹ {t.total:.2f}", Class="text-right font-mono font-bold")
+                status_class = "badge-success" if t.status == "Paid" else "badge-warning"
+                row <= html.TD(html.SPAN(t.status, Class=f"badge {status_class} badge-sm font-bold"), Class="text-center")
+                tbody <= row
 
         def render_inventory():
             tbody = document["inventory-body"]; tbody.clear()
@@ -896,23 +1291,52 @@
 
         def render_leads():
             tbody = document["leads-body"]; tbody.clear()
-            if not leads: return (tbody <= html.TR(html.TD("No active leads", colspan="3", Class="text-center py-10 opacity-30 text-base-content")))
-            for l in leads:
-                row = html.TR(Class="hover"); row <= html.TD(l["name"], Class="font-bold text-base-content"); row <= html.TD(l["source"], Class="opacity-70 text-base-content"); row <= html.TD(html.SPAN("NEW", Class="badge badge-info badge-sm font-bold text-white")); tbody <= row
+            if not leads: return (tbody <= html.TR(html.TD("No active leads", colspan="4", Class="text-center py-10 opacity-30 text-base-content")))
+            for l in reversed(leads):
+                row = html.TR(Class="hover")
+                row <= html.TD(l.get("date", "--"), Class="text-xs opacity-70")
+                row <= html.TD(l["name"], Class="font-bold text-base-content"); row <= html.TD(l["source"], Class="opacity-70 text-base-content"); row <= html.TD(html.SPAN(l.get("status", "New"), Class="badge badge-info badge-sm font-bold text-white")); tbody <= row
+
+        # --- Direct WhatsApp Notification Action ---
+        def notify_wa_action(evt):
+            btn = evt.target.closest("button")
+            party = btn.getAttribute("data-party")
+            amt = btn.getAttribute("data-amt")
+            ttype = btn.getAttribute("data-type")
+            
+            phone = company_db.get(party, {}).get("phone", "")
+            if not phone:
+                phone = window.prompt(f"No phone saved for {party}. Enter WhatsApp number (+91...):", "")
+                if phone:
+                    if party not in company_db: company_db[party] = {}
+                    company_db[party]["phone"] = phone
+                    save_state()
+            
+            if phone:
+                mob_clean = "".join([c for c in phone if c.isdigit() or c == "+"])
+                if ttype == "Sale":
+                    msg = window.encodeURIComponent(f"Hello from Printos. This is a gentle reminder regarding an outstanding payment of ₹ {amt} for {party}. Please clear it at your earliest convenience.")
+                else:
+                    msg = window.encodeURIComponent(f"Hello {party}, regarding our pending payable of ₹ {amt}, we are processing it and will update you shortly. - Printos")
+                window.open(f"https://wa.me/{mob_clean}?text={msg}", "_blank")
 
         def render_receivables():
             tbody = document["receivables-body"]; tbody.clear()
             unpaid = [x for x in ledger if x.type=="Sale" and x.status=="Unpaid"]
-            if not unpaid: tbody <= html.TR(html.TD("Clean", colspan="3", Class="text-center opacity-30 text-base-content"))
+            if not unpaid: tbody <= html.TR(html.TD("Clean", colspan="4", Class="text-center opacity-30 text-base-content"))
             for t in unpaid:
-                row = html.TR(); row <= html.TD(t.date, Class="text-base-content"); row <= html.TD(t.party, Class="text-base-content"); row <= html.TD(f"₹ {t.total:.2f}", Class="text-right font-bold text-warning"); tbody <= row
+                row = html.TR(); row <= html.TD(t.date, Class="text-base-content"); row <= html.TD(t.party, Class="font-bold text-base-content"); row <= html.TD(f"₹ {t.total:.2f}", Class="text-right font-bold text-warning font-mono")
+                btn = html.BUTTON(Class="btn btn-ghost btn-xs text-success"); btn.innerHTML = '<i class="fa-brands fa-whatsapp text-lg"></i> Notify'; btn.setAttribute("data-party", t.party); btn.setAttribute("data-amt", f"{t.total:.2f}"); btn.setAttribute("data-type", "Sale"); btn.bind("click", notify_wa_action)
+                row <= html.TD(btn, Class="text-center"); tbody <= row
 
         def render_payables():
             tbody = document["payables-body"]; tbody.clear()
             unpaid = [x for x in ledger if x.type=="Purchase" and x.status=="Unpaid"]
-            if not unpaid: tbody <= html.TR(html.TD("Clean", colspan="3", Class="text-center opacity-30 text-base-content"))
+            if not unpaid: tbody <= html.TR(html.TD("Clean", colspan="4", Class="text-center opacity-30 text-base-content"))
             for t in unpaid:
-                row = html.TR(); row <= html.TD(t.date, Class="text-base-content"); row <= html.TD(t.party, Class="text-base-content"); row <= html.TD(f"₹ {t.total:.2f}", Class="text-right font-bold text-error"); tbody <= row
+                row = html.TR(); row <= html.TD(t.date, Class="text-base-content"); row <= html.TD(t.party, Class="font-bold text-base-content"); row <= html.TD(f"₹ {t.total:.2f}", Class="text-right font-bold text-error font-mono")
+                btn = html.BUTTON(Class="btn btn-ghost btn-xs text-success"); btn.innerHTML = '<i class="fa-brands fa-whatsapp text-lg"></i> Notify'; btn.setAttribute("data-party", t.party); btn.setAttribute("data-amt", f"{t.total:.2f}"); btn.setAttribute("data-type", "Purchase"); btn.bind("click", notify_wa_action)
+                row <= html.TD(btn, Class="text-center"); tbody <= row
 
         def check_credit_limit(c):
             if not c: return
@@ -920,18 +1344,34 @@
             if out > 5000: document["warning-msg"].text = f"{c} balance: ₹ {out:,.2f}."; document["warning_modal"].showModal()
 
         def update_customer_suggestions():
-            for l_id in ["customer-list", "vendor-list", "lead-list"]:
-                dl = document[l_id]; dl.clear()
-                for c in sorted(list(company_db)): dl <= html.OPTION(value=c)
+            for l_id in ["customer-list", "vendor-list", "lead-list", "prof-customer-list"]:
+                if document.getElementById(l_id):
+                    dl = document[l_id]; dl.clear()
+                    for c in sorted(company_db.keys()): dl <= html.OPTION(value=c)
 
         def show_preview(evt):
             try:
                 idx = int(evt.target.closest("button").id.split("-")[1])
                 t = next(x for x in ledger if x.id == idx)
                 document["doc-title"].text = t.doc_type; document["inv-total"].text = f"{t.total:.2f}"; document["inv-num"].text = t.ref_no; document["inv-customer"].text = t.party; document["inv-date"].text = t.date
-                tbody = document["inv-items"]; tbody.clear(); row = html.TR(); row <= html.TD(t.item); row <= html.TD(str(t.qty), Class="text-right"); row <= html.TD(f"₹ {t.total:.2f}", Class="text-right"); tbody <= row
+                tbody = document["inv-items"]; tbody.clear(); row = html.TR()
+                row <= html.TD(t.item); row <= html.TD(str(t.qty), Class="text-right")
+                row <= html.TD(f"₹ {t.price:.2f}", Class="text-right font-mono")
+                row <= html.TD(f"₹ {t.total:.2f}", Class="text-right font-bold font-mono"); tbody <= row
+                
+                document["inv-sub"].text = f"{t.base_amt:.2f}"
+                document["inv-total"].text = f"{t.total:.2f}"
+                
+                gt = getattr(t, 'gst_type', 'Intra-State')
+                if gt == "Inter-State":
+                    document["tax-cgst-row"].classList.add("hidden"); document["tax-sgst-row"].classList.add("hidden"); document["tax-igst-row"].classList.remove("hidden")
+                    document["inv-igst"].text = f"{t.tax_amt:.2f}"
+                else:
+                    document["tax-cgst-row"].classList.remove("hidden"); document["tax-sgst-row"].classList.remove("hidden"); document["tax-igst-row"].classList.add("hidden")
+                    document["inv-cgst"].text = f"{(t.tax_amt/2):.2f}"; document["inv-sgst"].text = f"{(t.tax_amt/2):.2f}"
+                
                 document["invoice_modal"].showModal()
-            except: pass
+            except Exception as e: print(f"Preview error: {e}")
             
         def share_invoice_wa(evt):
             mob = window.prompt("Enter customer WhatsApp number (e.g., +919876543210):", "")
@@ -939,7 +1379,7 @@
                 mob_clean = "".join([c for c in mob if c.isdigit() or c == "+"])
                 inv_no = document["inv-num"].text
                 amt = document["inv-total"].text
-                inv_text = f"Hello, your invoice {inv_no} for ₹ {amt} from Printos Digital Solutions is ready."
+                inv_text = f"Hello, your document {inv_no} for ₹ {amt} from Printos Digital Solutions is ready."
                 msg = window.encodeURIComponent(inv_text)
                 window.open(f"https://wa.me/{mob_clean}?text={msg}", "_blank")
 
@@ -959,26 +1399,27 @@
             full_mob = cc + m if m else ""
             if any(l["name"].lower() == n.lower() for l in leads): return window.alert("Lead exists!")
             leads.append({"name": n, "source": s, "mobile": full_mob, "email": e, "comments": c, "date": datetime.date.today().strftime("%Y-%m-%d"), "status": "New"})
-            if n: company_db.add(n)
+            if n: company_db[n] = {"phone": full_mob, "email": e}
+            
             if document["quick-lead-wa-notify"].checked and full_mob:
                 msg = window.encodeURIComponent(f"Hi {n},\nThank you for reaching out to Printos. We will get back to you shortly.")
                 window.open(f"https://wa.me/{full_mob}?text={msg}", "_blank")
+                
             for i in ["name", "mobile", "email", "comments"]: document[f"quick-lead-{i}"].value = ""
-            document["quick-lead-source"].value = "LinkedIn"
-            document["quick-lead-wa-notify"].checked = False
+            document["quick-lead-source"].value = "LinkedIn"; document["quick-lead-wa-notify"].checked = False
             validate_lead_form(None); save_state(); close_slide_over(None); refresh_all()
             document["success-msg"].text = f"Lead '{n}' saved!"; document["success_modal"].showModal()
             
         def update_form_fields(evt):
             dt = document["sales-type"].value
-            for i, s in [("field-price", dt!="Delivery Note"), ("field-gst", dt!="Delivery Note"), ("field-status", dt not in ["Quotation", "Delivery Note", "Purchase Order"])]:
+            for i, s in [("field-price", dt!="Delivery Note"), ("field-gst", dt!="Delivery Note"), ("field-gst-type", dt!="Delivery Note"), ("field-status", dt not in ["Quotation", "Delivery Note", "Purchase Order"])]:
                 document[i].style.display = "block" if s else "none"
-            document["lbl-customer"].text = "Receiver" if dt=="Delivery Note" else "Customer Name"
+            document["lbl-customer"].text = "Receiver Name" if dt=="Delivery Note" else "Customer Name"
 
         def download_backup(evt):
-            data = {"ledger": [t.to_dict() for t in ledger], "inventory": inventory, "leads": leads}
+            data = {"ledger": [t.to_dict() for t in ledger], "journal": [j.to_dict() for j in journal_entries], "inventory": inventory, "leads": leads, "company": company_db}
             blob = window.Blob.new([window.JSON.stringify(data)], {'type': 'application/json'})
-            link = html.A(href=window.URL.createObjectURL(blob), download="backup.json"); document <= link; link.click(); link.remove()
+            link = html.A(href=window.URL.createObjectURL(blob), download=f"printos_backup_{datetime.date.today().strftime('%Y%m%d')}.json"); document <= link; link.click(); link.remove()
 
         def open_slide_over(evt): document["slide-over-panel"].classList.replace("closed", "open")
         def close_slide_over(evt): document["slide-over-panel"].classList.replace("open", "closed")
@@ -990,11 +1431,24 @@
         def init():
             try:
                 load_state()
-                for v in ["dashboard", "create", "ledger", "receivables", "leads", "purchase", "payables", "inventory", "accounting", "gst", "utils"]:
+                for v in ["dashboard", "create", "delivery", "profiles", "ledger", "receivables", "leads", "purchase", "payables", "inventory", "journal", "balancesheet", "accounting", "gst", "utils"]:
                     safe_bind(f"nav-{v}", "click", lambda e, v=v: switch_view(f"view-{v}"))
+                
                 safe_bind("btn-login", "click", login_handler); safe_bind("btn-logout-sidebar", "click", logout_handler)
-                safe_bind("btn-save-sales", "click", save_sales); safe_bind("btn-save-purchase", "click", save_purchase)
+                safe_bind("btn-save-sales", "click", save_sales); safe_bind("btn-save-purchase", "click", save_purchase); safe_bind("btn-save-journal", "click", save_journal)
                 safe_bind("theme-toggle-checkbox", "change", toggle_theme); safe_bind("sales-type", "change", update_form_fields)
+                safe_bind("bs-period", "change", render_balancesheet)
+                safe_bind("btn-load-prof", "click", render_profile)
+                
+                # Accessibility Binds
+                safe_bind("btn-acc-normal", "click", lambda e: toggle_accessibility("normal"))
+                safe_bind("btn-acc-large", "click", lambda e: toggle_accessibility("large"))
+                safe_bind("btn-acc-contrast", "click", lambda e: toggle_accessibility("contrast"))
+                
+                # Client Modals
+                safe_bind("btn-save-new-client", "click", save_new_client_info)
+                safe_bind("btn-skip-new-client", "click", skip_new_client)
+                
                 safe_bind("btn-user-roles", "click", open_roles_modal); safe_bind("btn-save-user", "click", save_new_user)
                 for i in ["name", "mobile", "email", "comments"]: safe_bind(f"quick-lead-{i}", "input", validate_lead_form)
                 safe_bind("btn-save-quick-lead", "click", save_quick_lead); safe_bind("btn-open-lead-panel", "click", open_slide_over); safe_bind("close-slide-over", "click", close_slide_over)
@@ -1003,10 +1457,12 @@
                 safe_bind("fab-purchase", "click", lambda e: [switch_view("view-purchase"), document.select(".fab-menu")[0].classList.remove("active")])
                 safe_bind("fab-lead", "click", lambda e: [open_slide_over(e), document.select(".fab-menu")[0].classList.remove("active")])
                 safe_bind("btn-wa-invoice", "click", share_invoice_wa)
+                
+                if document.getElementById("j-date"): document["j-date"].value = datetime.date.today().strftime("%Y-%m-%d")
 
                 global chart_main
                 if document.getElementById("mainChart"):
-                    chart_main = window.Chart.new(document["mainChart"].getContext("2d"), {"type": "bar", "data": {"labels": ["Current Period"], "datasets": [{"label": "Sales", "data": [0], "backgroundColor": "#2d9ed8", "borderRadius": 8}, {"label": "Purch", "data": [0], "backgroundColor": "#8b5cf6", "borderRadius": 8}]}})
+                    chart_main = window.Chart.new(document["mainChart"].getContext("2d"), {"type": "bar", "data": {"labels": ["Current Period"], "datasets": [{"label": "Sales", "data": [0], "backgroundColor": "#0ea5e9", "borderRadius": 8}, {"label": "Purch", "data": [0], "backgroundColor": "#8b5cf6", "borderRadius": 8}]}})
                 if document.getElementById("pieChart"):
                     window.Chart.new(document["pieChart"].getContext("2d"), {"type": "doughnut", "data": {"labels": ["Cash", "Credit"], "datasets": [{"data": [70, 30], "backgroundColor": ["#10b981", "#f59e0b"]}]}, "options": {"cutout": "70%"}})
                 
@@ -1016,6 +1472,7 @@
                     global current_user, current_role
                     current_user, current_role = session_u, session_r
                     document["login-screen"].style.setProperty("display", "none"); apply_permissions()
+                    trigger_hot_leads_popup()
             except Exception as e: document["loader-error"].innerHTML = f"<div class='bg-red-100 text-red-600 p-4 rounded-lg shadow font-mono text-sm max-w-lg'>Error: {str(e)}</div>"
 
         init()
