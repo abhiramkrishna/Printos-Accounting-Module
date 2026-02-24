@@ -275,7 +275,7 @@
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div class="form-control w-full">
                                     <label class="label"><span class="label-text font-bold" id="lbl-customer">Company Name</span></label>
-                                    <input type="text" id="sales-cust" list="customer-list" class="input input-bordered w-full text-base-content" placeholder="Select or Type new name...">
+                                    <input type="text" id="sales-cust" list="customer-list" class="input input-bordered w-full text-base-content" autocomplete="off" placeholder="Select or Type new name...">
                                     <datalist id="customer-list"></datalist>
                                 </div>
                                 <div class="form-control w-full">
@@ -347,7 +347,7 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="form-control">
                                     <label class="label"><span class="label-text font-bold">Supplier Name</span></label>
-                                    <input type="text" id="purch-vendor" list="vendor-list" placeholder="Select or Type new..." class="input input-bordered w-full text-base-content" />
+                                    <input type="text" id="purch-vendor" list="vendor-list" autocomplete="off" placeholder="Select or Type new..." class="input input-bordered w-full text-base-content" />
                                     <datalist id="vendor-list"></datalist>
                                 </div>
                                 <div class="form-control">
@@ -371,7 +371,7 @@
                         <div class="flex flex-wrap justify-between mb-4 text-base-content items-end gap-4">
                             <h2 class="card-title font-bold w-full md:w-auto"><i class="fa-solid fa-building text-sky-500"></i> Company Profiles & History</h2>
                             <div class="flex gap-2 flex-wrap items-center bg-base-200 p-2 rounded-xl border border-base-300">
-                                <input type="text" id="prof-search" list="prof-customer-list" placeholder="Search Company..." class="input input-bordered input-sm w-48 font-bold text-sky-600">
+                                <input type="text" id="prof-search" list="prof-customer-list" autocomplete="off" placeholder="Search Company..." class="input input-bordered input-sm w-48 font-bold text-sky-600">
                                 <datalist id="prof-customer-list"></datalist>
                                 <select id="prof-year" class="select select-bordered select-sm">
                                     <option value="All">All Years</option>
@@ -458,7 +458,7 @@
 
                 <div id="view-journal" class="view-section">
                     <div class="card bg-base-100 shadow-xl p-6 h-[700px] flex flex-col">
-                        <h2 class="card-title font-bold text-base-content mb-4">Journal Entries</h2>
+                        <h2 class="card-title font-bold text-base-content mb-4">Journal Entries (Automated & Manual)</h2>
                         <div class="grid grid-cols-5 gap-3 mb-6 bg-base-200 p-6 rounded-xl border border-base-300 shadow-inner">
                             <input type="date" id="j-date" class="input input-bordered input-sm w-full">
                             <input type="text" id="j-debit" placeholder="Debit A/C" class="input input-bordered input-sm w-full font-bold text-sky-600">
@@ -884,7 +884,6 @@
                     leads = json.loads(window.localStorage.getItem("printos_leads"))
                 if window.localStorage.getItem("printos_company_db"):
                     cdb = json.loads(window.localStorage.getItem("printos_company_db"))
-                    # Migration handler (list to dict)
                     if isinstance(cdb, list): company_db = {c: {"phone": "", "email": ""} for c in cdb}
                     else: company_db = cdb
                 if window.localStorage.getItem("printos_users"):
@@ -1031,7 +1030,7 @@
             try: document.getElementById("new_client_modal").close()
             except: document["new_client_modal"].removeAttribute("open")
 
-        # --- CORE FORM LOGIC ---
+        # --- CORE FORM LOGIC & AUTO JOURNAL ---
         def save_sales(evt):
             try:
                 ref_no = document["next-inv"].value
@@ -1042,8 +1041,17 @@
                 tx = Transaction("Sale", dtype, ref_no, cust, item, qty, price, gst, status, gst_type)
                 ledger.append(tx)
                 
+                # Auto Journal Creation (Skip for DO)
+                if dtype != "Delivery Note":
+                    debit_ac = "Cash/Bank" if status == "Paid" else f"Accounts Receivable - {cust}"
+                    credit_ac = "Sales Revenue"
+                    je = JournalEntry(tx.date, debit_ac, credit_ac, tx.total, f"Auto-generated for {dtype} #{ref_no}")
+                    journal_entries.append(je)
+                
                 is_new_client = False
-                if cust and cust not in company_db: is_new_client = True
+                if cust and cust not in company_db:
+                    company_db[cust] = {"phone": "", "email": ""}
+                    is_new_client = True
                 
                 save_state(); refresh_all()
                 document["status-msg"].text = f"{dtype} saved successfully!"
@@ -1059,11 +1067,20 @@
         def save_purchase(evt):
             try:
                 vendor, item, qty, cost, status = [document[i].value for i in ["purch-vendor", "purch-item", "purch-qty", "purch-cost", "purch-status"]]
-                tx = Transaction("Purchase", "Bill", f"PUR-{len(ledger)+1:03}", vendor, item, qty, cost, 0, status)
+                ref_no = f"PUR-{len(ledger)+1:03}"
+                tx = Transaction("Purchase", "Bill", ref_no, vendor, item, qty, cost, 0, status)
                 ledger.append(tx)
                 
+                # Auto Journal Creation
+                debit_ac = "Purchases / Inventory"
+                credit_ac = "Cash/Bank" if status == "Paid" else f"Accounts Payable - {vendor}"
+                je = JournalEntry(tx.date, debit_ac, credit_ac, tx.total, f"Auto-generated for Purchase #{ref_no}")
+                journal_entries.append(je)
+                
                 is_new_client = False
-                if vendor and vendor not in company_db: is_new_client = True
+                if vendor and vendor not in company_db:
+                    company_db[vendor] = {"phone": "", "email": ""}
+                    is_new_client = True
                 
                 save_state(); refresh_all()
                 document["purch-vendor"].value = ""; document["purch-item"].value = ""; document["purch-cost"].value = ""
@@ -1092,18 +1109,13 @@
         def toggle_accessibility(action, evt=None):
             b = document.select("body")[0]
             h = document.select("html")[0]
-            
-            if action == "normal":
-                b.classList.remove("text-large-mode")
-            elif action == "large":
-                b.classList.add("text-large-mode")
+            if action == "normal": b.classList.remove("text-large-mode")
+            elif action == "large": b.classList.add("text-large-mode")
             elif action == "contrast":
                 if b.classList.contains("high-contrast-mode"):
-                    b.classList.remove("high-contrast-mode")
-                    h.setAttribute("data-theme", "light")
+                    b.classList.remove("high-contrast-mode"); h.setAttribute("data-theme", "light")
                 else:
-                    b.classList.add("high-contrast-mode")
-                    h.setAttribute("data-theme", "dark") # Dark works best with filter for contrast
+                    b.classList.add("high-contrast-mode"); h.setAttribute("data-theme", "dark") 
 
         def switch_view(view_id):
             for el in document.select(".view-section"): el.classList.remove("active")
@@ -1112,7 +1124,6 @@
             nav_id = view_id.replace("view-", "nav-")
             if document.getElementById(nav_id): document[nav_id].classList.add("active")
             document["page-title"].text = view_id.replace("view-", "").replace("-", " ").capitalize()
-            
             if view_id == "view-profiles": render_profile()
 
         def refresh_all():
@@ -1133,10 +1144,8 @@
             net = s - p
             prefix = "-₹ " if net < 0 else "₹ "
             document["pl-net"].text = f"{prefix}{format_short_amt(abs(net))}"
-            
             document["next-inv"].value = f"#DOC-{len(ledger)+1:03}"
             
-            # Notifications Array Builder
             nl, empty, badge = document["notif-list"], document["notif-empty"], document["notif-badge"]
             for c in list(nl.children): 
                 if c.id not in ["notif-title", "notif-empty"]: nl.removeChild(c)
@@ -1144,10 +1153,8 @@
             notifs = []
             for n, d in inventory.items():
                 if d["qty"] < 5: notifs.append(f"Low Stock: {n}")
-            
             pend_leads = [l for l in leads if l.get("status") in ["New", "Pending"]]
             if pend_leads: notifs.append(f"{len(pend_leads)} Pending Lead(s)")
-            
             hot = get_hot_leads()
             if hot: notifs.append(f"{len(hot)} HOT Lead(s) - Action Req!")
 
@@ -1159,7 +1166,6 @@
             else:
                 badge.classList.add("hidden"); empty.style.display="block"; document["header-alert"].classList.add("hidden")
 
-            # Update Low Stock UI in dashboard
             ul = document["low-stock-list"]; ul.clear()
             stock_alerts = sum(1 for _, d in inventory.items() if d["qty"] < 5)
             if stock_alerts:
@@ -1188,10 +1194,7 @@
             if not dn: return (tbody <= html.TR(html.TD("No Delivery Notes", colspan="5", Class="text-center py-10 opacity-30")))
             for t in reversed(dn):
                 row = html.TR(Class="hover")
-                row <= html.TD(t.date, Class="text-xs opacity-70")
-                row <= html.TD(t.party, Class="font-bold")
-                row <= html.TD(t.item, Class="opacity-80")
-                row <= html.TD(str(t.qty))
+                row <= html.TD(t.date, Class="text-xs opacity-70"); row <= html.TD(t.party, Class="font-bold"); row <= html.TD(t.item, Class="opacity-80"); row <= html.TD(str(t.qty))
                 btn = html.BUTTON(f"View {t.ref_no}", Class="btn btn-ghost btn-xs text-sky-500", id=f"p-{t.id}"); btn.bind("click", show_preview)
                 row <= html.TD(btn); tbody <= row
                 
@@ -1199,17 +1202,13 @@
             tbody = document["journal-body"]; tbody.clear()
             for j in reversed(journal_entries):
                 row = html.TR(Class="hover")
-                row <= html.TD(j.date, Class="text-xs opacity-70")
-                row <= html.TD(j.debit, Class="font-bold text-sky-600")
-                row <= html.TD(j.credit, Class="font-bold text-violet-600")
-                row <= html.TD(f"₹ {j.amt:.2f}", Class="text-right font-bold")
-                row <= html.TD(j.desc, Class="text-xs opacity-60")
+                row <= html.TD(j.date, Class="text-xs opacity-70"); row <= html.TD(j.debit, Class="font-bold text-sky-600")
+                row <= html.TD(j.credit, Class="font-bold text-violet-600"); row <= html.TD(f"₹ {j.amt:.2f}", Class="text-right font-bold"); row <= html.TD(j.desc, Class="text-xs opacity-60")
                 tbody <= row
                 
         def render_balancesheet(evt=None):
             period = document["bs-period"].value
             today = datetime.date.today()
-            
             valid_ledger = []
             for t in ledger:
                 try:
@@ -1224,34 +1223,22 @@
             cash_in = sum(t.total for t in valid_ledger if t.type == "Sale" and t.status == "Paid")
             cash_out = sum(t.total for t in valid_ledger if t.type == "Purchase" and t.status == "Paid")
             cash_bal = cash_in - cash_out
-            
             rec = sum(t.total for t in valid_ledger if t.type == "Sale" and t.status == "Unpaid")
             pay = sum(t.total for t in valid_ledger if t.type == "Purchase" and t.status == "Unpaid")
-            
             inv_val = sum(d["qty"] * d["cost"] for _, d in inventory.items())
             
-            assets = cash_bal + rec + inv_val
-            equity = assets - pay 
+            assets = cash_bal + rec + inv_val; equity = assets - pay 
             
-            document["bs-cash"].text = f"₹ {cash_bal:,.2f}"
-            document["bs-rec"].text = f"₹ {rec:,.2f}"
-            document["bs-inv"].text = f"₹ {inv_val:,.2f}"
-            document["bs-total-assets"].text = f"₹ {assets:,.2f}"
-            
-            document["bs-pay"].text = f"₹ {pay:,.2f}"
-            document["bs-equity"].text = f"₹ {equity:,.2f}"
-            document["bs-total-liab"].text = f"₹ {(pay + equity):,.2f}"
+            document["bs-cash"].text = f"₹ {cash_bal:,.2f}"; document["bs-rec"].text = f"₹ {rec:,.2f}"; document["bs-inv"].text = f"₹ {inv_val:,.2f}"; document["bs-total-assets"].text = f"₹ {assets:,.2f}"
+            document["bs-pay"].text = f"₹ {pay:,.2f}"; document["bs-equity"].text = f"₹ {equity:,.2f}"; document["bs-total-liab"].text = f"₹ {(pay + equity):,.2f}"
 
-        # --- NEW COMPANY PROFILES LOGIC ---
         def render_profile(evt=None):
             party = document["prof-search"].value
             year = document["prof-year"].value
             ttype = document["prof-type"].value
-            
             tbody = document["prof-body"]; tbody.clear()
             
-            if not party:
-                return (tbody <= html.TR(html.TD("Select a company to view history.", colspan="6", Class="text-center opacity-40 py-10 font-bold italic")))
+            if not party: return (tbody <= html.TR(html.TD("Select a company to view history.", colspan="6", Class="text-center opacity-40 py-10 font-bold italic")))
                 
             filtered = []
             for t in ledger:
@@ -1264,23 +1251,16 @@
             total_p = sum(t.total for t in filtered if t.type == "Purchase")
             out = sum(t.total for t in filtered if t.status == "Unpaid" and t.type == "Sale") - sum(t.total for t in filtered if t.status == "Unpaid" and t.type == "Purchase")
             
-            document["prof-stat-billed"].text = f"₹ {format_short_amt(total_b)}"
-            document["prof-stat-purch"].text = f"₹ {format_short_amt(total_p)}"
-            document["prof-stat-out"].text = f"₹ {format_short_amt(out)}"
+            document["prof-stat-billed"].text = f"₹ {format_short_amt(total_b)}"; document["prof-stat-purch"].text = f"₹ {format_short_amt(total_p)}"; document["prof-stat-out"].text = f"₹ {format_short_amt(out)}"
             
-            if not filtered:
-                return (tbody <= html.TR(html.TD("No records found for these filters.", colspan="6", Class="text-center opacity-40 py-10 font-bold italic")))
+            if not filtered: return (tbody <= html.TR(html.TD("No records found for these filters.", colspan="6", Class="text-center opacity-40 py-10 font-bold italic")))
                 
             for t in reversed(filtered):
                 row = html.TR(Class="hover")
-                row <= html.TD(t.date, Class="text-xs opacity-70")
-                row <= html.TD(html.SPAN(t.type, Class="badge badge-outline badge-sm"))
-                row <= html.TD(f"{t.doc_type} {t.ref_no}", Class="font-bold")
-                row <= html.TD(t.item, Class="opacity-80")
-                row <= html.TD(f"₹ {t.total:.2f}", Class="text-right font-mono font-bold")
+                row <= html.TD(t.date, Class="text-xs opacity-70"); row <= html.TD(html.SPAN(t.type, Class="badge badge-outline badge-sm")); row <= html.TD(f"{t.doc_type} {t.ref_no}", Class="font-bold")
+                row <= html.TD(t.item, Class="opacity-80"); row <= html.TD(f"₹ {t.total:.2f}", Class="text-right font-mono font-bold")
                 status_class = "badge-success" if t.status == "Paid" else "badge-warning"
-                row <= html.TD(html.SPAN(t.status, Class=f"badge {status_class} badge-sm font-bold"), Class="text-center")
-                tbody <= row
+                row <= html.TD(html.SPAN(t.status, Class=f"badge {status_class} badge-sm font-bold"), Class="text-center"); tbody <= row
 
         def render_inventory():
             tbody = document["inventory-body"]; tbody.clear()
@@ -1294,10 +1274,8 @@
             if not leads: return (tbody <= html.TR(html.TD("No active leads", colspan="4", Class="text-center py-10 opacity-30 text-base-content")))
             for l in reversed(leads):
                 row = html.TR(Class="hover")
-                row <= html.TD(l.get("date", "--"), Class="text-xs opacity-70")
-                row <= html.TD(l["name"], Class="font-bold text-base-content"); row <= html.TD(l["source"], Class="opacity-70 text-base-content"); row <= html.TD(html.SPAN(l.get("status", "New"), Class="badge badge-info badge-sm font-bold text-white")); tbody <= row
+                row <= html.TD(l.get("date", "--"), Class="text-xs opacity-70"); row <= html.TD(l["name"], Class="font-bold text-base-content"); row <= html.TD(l["source"], Class="opacity-70 text-base-content"); row <= html.TD(html.SPAN(l.get("status", "New"), Class="badge badge-info badge-sm font-bold text-white")); tbody <= row
 
-        # --- Direct WhatsApp Notification Action ---
         def notify_wa_action(evt):
             btn = evt.target.closest("button")
             party = btn.getAttribute("data-party")
@@ -1314,10 +1292,8 @@
             
             if phone:
                 mob_clean = "".join([c for c in phone if c.isdigit() or c == "+"])
-                if ttype == "Sale":
-                    msg = window.encodeURIComponent(f"Hello from Printos. This is a gentle reminder regarding an outstanding payment of ₹ {amt} for {party}. Please clear it at your earliest convenience.")
-                else:
-                    msg = window.encodeURIComponent(f"Hello {party}, regarding our pending payable of ₹ {amt}, we are processing it and will update you shortly. - Printos")
+                if ttype == "Sale": msg = window.encodeURIComponent(f"Hello from Printos. This is a gentle reminder regarding an outstanding payment of ₹ {amt} for {party}. Please clear it at your earliest convenience.")
+                else: msg = window.encodeURIComponent(f"Hello {party}, regarding our pending payable of ₹ {amt}, we are processing it and will update you shortly. - Printos")
                 window.open(f"https://wa.me/{mob_clean}?text={msg}", "_blank")
 
         def render_receivables():
@@ -1359,8 +1335,7 @@
                 row <= html.TD(f"₹ {t.price:.2f}", Class="text-right font-mono")
                 row <= html.TD(f"₹ {t.total:.2f}", Class="text-right font-bold font-mono"); tbody <= row
                 
-                document["inv-sub"].text = f"{t.base_amt:.2f}"
-                document["inv-total"].text = f"{t.total:.2f}"
+                document["inv-sub"].text = f"{t.base_amt:.2f}"; document["inv-total"].text = f"{t.total:.2f}"
                 
                 gt = getattr(t, 'gst_type', 'Intra-State')
                 if gt == "Inter-State":
@@ -1374,12 +1349,15 @@
             except Exception as e: print(f"Preview error: {e}")
             
         def share_invoice_wa(evt):
-            mob = window.prompt("Enter customer WhatsApp number (e.g., +919876543210):", "")
-            if mob:
-                mob_clean = "".join([c for c in mob if c.isdigit() or c == "+"])
+            party = document["inv-customer"].text
+            phone = company_db.get(party, {}).get("phone", "")
+            if not phone: phone = window.prompt("Enter customer WhatsApp number (e.g., +919876543210):", "")
+            
+            if phone:
+                mob_clean = "".join([c for c in phone if c.isdigit() or c == "+"])
                 inv_no = document["inv-num"].text
                 amt = document["inv-total"].text
-                inv_text = f"Hello, your document {inv_no} for ₹ {amt} from Printos Digital Solutions is ready."
+                inv_text = f"Hello {party}, your document {inv_no} for ₹ {amt} from Printos Digital Solutions is ready."
                 msg = window.encodeURIComponent(inv_text)
                 window.open(f"https://wa.me/{mob_clean}?text={msg}", "_blank")
 
@@ -1399,7 +1377,8 @@
             full_mob = cc + m if m else ""
             if any(l["name"].lower() == n.lower() for l in leads): return window.alert("Lead exists!")
             leads.append({"name": n, "source": s, "mobile": full_mob, "email": e, "comments": c, "date": datetime.date.today().strftime("%Y-%m-%d"), "status": "New"})
-            if n: company_db[n] = {"phone": full_mob, "email": e}
+            
+            if n and n not in company_db: company_db[n] = {"phone": full_mob, "email": e}
             
             if document["quick-lead-wa-notify"].checked and full_mob:
                 msg = window.encodeURIComponent(f"Hi {n},\nThank you for reaching out to Printos. We will get back to you shortly.")
@@ -1437,18 +1416,9 @@
                 safe_bind("btn-login", "click", login_handler); safe_bind("btn-logout-sidebar", "click", logout_handler)
                 safe_bind("btn-save-sales", "click", save_sales); safe_bind("btn-save-purchase", "click", save_purchase); safe_bind("btn-save-journal", "click", save_journal)
                 safe_bind("theme-toggle-checkbox", "change", toggle_theme); safe_bind("sales-type", "change", update_form_fields)
-                safe_bind("bs-period", "change", render_balancesheet)
-                safe_bind("btn-load-prof", "click", render_profile)
-                
-                # Accessibility Binds
-                safe_bind("btn-acc-normal", "click", lambda e: toggle_accessibility("normal"))
-                safe_bind("btn-acc-large", "click", lambda e: toggle_accessibility("large"))
-                safe_bind("btn-acc-contrast", "click", lambda e: toggle_accessibility("contrast"))
-                
-                # Client Modals
-                safe_bind("btn-save-new-client", "click", save_new_client_info)
-                safe_bind("btn-skip-new-client", "click", skip_new_client)
-                
+                safe_bind("bs-period", "change", render_balancesheet); safe_bind("btn-load-prof", "click", render_profile)
+                safe_bind("btn-acc-normal", "click", lambda e: toggle_accessibility("normal")); safe_bind("btn-acc-large", "click", lambda e: toggle_accessibility("large")); safe_bind("btn-acc-contrast", "click", lambda e: toggle_accessibility("contrast"))
+                safe_bind("btn-save-new-client", "click", save_new_client_info); safe_bind("btn-skip-new-client", "click", skip_new_client)
                 safe_bind("btn-user-roles", "click", open_roles_modal); safe_bind("btn-save-user", "click", save_new_user)
                 for i in ["name", "mobile", "email", "comments"]: safe_bind(f"quick-lead-{i}", "input", validate_lead_form)
                 safe_bind("btn-save-quick-lead", "click", save_quick_lead); safe_bind("btn-open-lead-panel", "click", open_slide_over); safe_bind("close-slide-over", "click", close_slide_over)
@@ -1471,8 +1441,7 @@
                 if session_u and session_r:
                     global current_user, current_role
                     current_user, current_role = session_u, session_r
-                    document["login-screen"].style.setProperty("display", "none"); apply_permissions()
-                    trigger_hot_leads_popup()
+                    document["login-screen"].style.setProperty("display", "none"); apply_permissions(); trigger_hot_leads_popup()
             except Exception as e: document["loader-error"].innerHTML = f"<div class='bg-red-100 text-red-600 p-4 rounded-lg shadow font-mono text-sm max-w-lg'>Error: {str(e)}</div>"
 
         init()
